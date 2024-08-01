@@ -1,0 +1,43 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+<div class="profile-top">
+    <div class="profile-top-left">
+        <div class="specialists-img-block">
+            {% if specialist.registered %}
+                <div class="specialists-registered">Р</div>
+            {% endif %}
+            <img src="/media/{{ specialist.photo }}" alt="photo" class="specialists-img">
+        </div>
+        <div class="specialists-info">
+            <span class="specialists-info-label">Город: </span>{{ specialist.city }}
+        </div>
+        <div class="specialists-info">
+            <span class="specialists-info-label">Сферы деятельности в ранней помощи: </span>{{ specialist.fields_of_activity }}
+        </div>
+        <div class="specialists-info">
+            <span class="specialists-info-label">Специализация: </span>{{ specialist.profession }}
+        </div>
+    </div>
+    <div class="profile-top-right">
+        <div class="profile-title">{{ specialist.last_name|title }} {{ specialist.first_name|title }} {{ specialist.patronymic|title }}</div>
+        <p class="profile-description">{{ specialist.description|safe }}</p>
+    </div>
+</div>
+<div class="separator"></div>
+<div class="profile-title">Публикации специалиста</div>
+<div class="profile-articles-block">
+    {% for article in specialist.get_open_articles %}
+        <a href="{% url 'specialists:article' article.pk %}" class="profile-article-block">
+            <div class="profile-article-vertical-line"></div>
+            <div class="profile-article-icon-block">
+                <img src="{% static 'img/article.png' %}" class="profile-article-icon">
+            </div>
+            <div class="profile-article-content">
+                <div class="index-link profile-article-title">{{ article.title }}</div>
+                <div class="index-news-date profile-article-date">{{ article.approved_at }}</div>
+            </div>
+        </a>
+    {% endfor %}
+</div>
+{% endblock %}

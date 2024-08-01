@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block js %}
+<script src='https://www.google.com/recaptcha/api.js'></script>
+<script src="{% static 'js/consultation.js' %}"></script>
+{% endblock %}
+{% block content %}
+<h3 class="page-title">Интерактивная консультация</h3>
+<div class="separator"></div>
+<p class="consultation-intro">{{ text|safe }}</p>
+<div class="consultation-form">
+    {% csrf_token %}
+    <div class="consultation-form-subblock">
+        <input type="text" class="med-input consultation-name" placeholder="Имя">
+        <input type="text" class="med-input consultation-surname" placeholder="Фамилия">
+        <input type="text" class="med-input consultation-patronymic" placeholder="Отчество">
+        <input type="text" class="med-input consultation-phone-number" placeholder="Номер телефона">
+        <input type="email" class="med-input consultation-email" placeholder="Адрес электронной почты">
+    </div>
+    <div class="consultation-form-subblock">
+        <input type="text" class="med-input consultation-address" placeholder="Адрес">
+        <textarea class="med-input consultation-question" placeholder="Ваш вопрос"></textarea>
+    </div>
+    <div class="consultation-form-subblock">
+        <div class="form-group g-recaptcha" data-sitekey="6Lf_F2YoAAAAAAVQNp1zYPQk7S5cdxh7ylOkxGCU"></div>
+        <div class="consultation-checkbox-block"><input type="checkbox" class="consultation-checkbox"><span>Даю согласие на обработку персональных данных</span></div>
+        <a {% if rules_url %}href="{% url 'custom:constructor' url=rules_url %}"{% else %}href="#"{% endif %} class="consultation-read-link">Правила обработки персональных данных</a>
+        <span class="med-button consultation-submit">Отправить</span>
+    </div>
+</div>
+<div class="faq-background">
+    <div class="faq-form-block">
+        <span class="faq-form-notification"></span>
+    </div>
+</div>
+{% endblock %}

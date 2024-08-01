@@ -1,0 +1,23 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block js %}
+<script src="{% static 'js/login.js' %}"></script>
+{% endblock %}
+{% block content %}
+<h1 class="page-title">Авторизация</h1>
+<div class="separator"></div>
+<p class="consultation-intro">{{ text|safe }}</p>
+<form action="{% url 'authentication:login' %}" class="consultation-form login-form" method="post">
+    <div class="consultation-form-subblock">
+        <img src="{% static 'img/password_show.svg' %}" alt="show" class="login-password-show">
+        <img src="{% static 'img/password_hide.svg' %}" alt="show" class="login-password-hide">
+        {% csrf_token %}
+        {% for field in login_form %}
+            {{ field }}
+        {% endfor %}
+        <input type="submit" class="med-button login-submit" value="Войти">
+        <a href="{% url 'authentication:register' %}" class="consultation-read-link" style="margin-bottom: 5px;">Зарегистрироваться</a>
+        <a href="{% url 'password_reset' %}" class="consultation-read-link">Забыли пароль?</a>
+    </div>
+</form>
+{% endblock %}

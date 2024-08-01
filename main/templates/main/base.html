@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{{ title }}{% endblock %}</title>
+        {% block css %}
+        {% endblock %}
+        <!-- <link rel="stylesheet" href="{% static 'css/tailwind.css'%}"> -->
+        <link rel="stylesheet" href="{% static 'css/style.css'%}">
+        <link type="image/x-icon" href="/static/img/logo.png" rel="shortcut icon" id="head_icon">
+        <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+        <script src="{% static 'js/base.js' %}"></script>
+        <script async src="https://cse.google.com/cse.js?cx=92e3da7a8ab554250"></script>
+        {% block js %}
+        {% endblock %}
+    </head>
+    <body>
+        <div class="base-background"></div>
+        <div class="base-sidebar">
+            <a href="{% url 'index' %}" class="base-logo-block">
+                <img src="{% static 'img/logo.png' %}" alt="logo" class="base-logo">
+            </a>
+            <div class="base-search-block">
+                <!-- <input type="text" class="base-search" placeholder="Поиск"> -->
+                <div class="gcse-search"></div>
+            </div>
+            <div class="base-menu">
+                {% block menu %}
+                    <a href="{% url 'index' %}" class="menu-page{% if 'index' in request.resolver_match.url_name %} active{% endif %}">Главная</a>
+                    {% for section in menu_sections %}
+                        <div class="menu-section-block{% if current_page and current_page.section.pk == section.pk %} active{% endif %}" id="menu-section-{{ section.pk }}">
+                            <span class="menu-section">{{ section.name }}
+                            <img src="{% static 'img/menu-arrow.svg' %}" alt=">" class="menu-section-arrow"{% if current_page and current_page.section.pk == section.pk %} style="transform: rotate(-90deg);"{% endif %}>
+                        </div>
+                        <div class="menu-section-dropdown" id="menu-dropdown-{{ section.pk }}"{% if current_page and current_page.section.pk == section.pk %} style="display: flex; height: auto;"{% endif %}>
+                            {% for page in section.get_pages %}
+                                {% if page.approved or user.is_staff %}
+                                    <a href="{% url 'custom:constructor' url=page.url %}" class="menu-section-page{% if page.url == request.resolver_match.kwargs.url %} active{% endif %}">
+                                        {{ page.title }}<div class="menu-section-page-circle"></div>
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                            {% if section.pk == account_section_id %}
+                                {% if user.is_superuser %}
+                                    <a href="{% url 'admin:index' %}" class="menu-section-page">Личный кабинет<div class="menu-section-page-circle"></div></a>
+                                {% elif user.is_authenticated %}
+                                    <a href="{% url 'specialists:account' %}" class="menu-section-page">Личный кабинет<div class="menu-section-page-circle"></div></a>
+                                {% else %}
+                                    <a href="{% url 'authentication:login' %}" class="menu-section-page{% if 'login' in request.resolver_match.namespace %} active{% endif %}">Личный кабинет<div class="menu-section-page-circle"></div></a>
+                                {% endif %}
+                            {% endif%}
+                        </div>
+                    {% endfor %}
+                    {% for page in menu_pages %}
+                        {% if page.approved or user.is_staff %}
+                            <a href="{% url 'custom:constructor' url=page.url %}" class="menu-page{% if page.url == request.resolver_match.kwargs.url %} active{% endif %}">{{ page.title }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    <a href="{% url 'news' %}" class="menu-page{% if 'news' in request.resolver_match.url_name %} active{% endif %}">Новости</a>
+                    <a href="{% url 'geography' %}" class="menu-page{% if 'geography' in request.resolver_match.url_name %} active{% endif %}">География ранней помощи </a>
+                    <a href="{% url 'consultation' %}" class="menu-page{% if 'consultation' in request.resolver_match.url_name %} active{% endif %}">Интерактивная консультация</a>
+                    <a href="{% url 'faq' %}" class="menu-page{% if 'faq' in request.resolver_match.url_name %} active{% endif %}">Вопрос - ответ</a>
+                    <a href="{% url 'reviews' %}" class="menu-page{% if 'reviews' in request.resolver_match.url_name %} active{% endif %}">Отзывы</a>
+                    <a href="{% url 'specialists:specialists' %}" class="menu-page{% if 'specialists' in request.resolver_match.url_name %} active{% endif %}">Специалисты ранней помощи</a>
+                {% endblock %}
+            </div>
+        </div>
+        <div class="base-container">
+            <div class="poor-vision-block">
+                <img src="{% static 'img/menu-arrow.svg' %}" alt="скрыть/показать" class="poor-vision-hide">
+                <span class="poor-vision-settings">Настройки версии для слабовидящих</span>
+                <div class="poor-vision-subblock">
+                    <span>Шрифт:</span>
+                    <div class="poor-vision-options">
+                        <div class="poor-vision-option" id="font-off">100%</div>
+                        <div class="poor-vision-option" id="font-150">150%</div>
+                        <div class="poor-vision-option" id="font-200">200%</div>
+                    </div>
+                </div>
+                <div class="poor-vision-subblock">
+                    <span>Цвет:</span>
+                    <div class="poor-vision-options">
+                        <div class="poor-vision-option" id="bg-off"><span>Обычный</span></div>
+                        <div class="poor-vision-option" id="bg-white"><span>H</span></div>
+                        <div class="poor-vision-option" id="bg-black"><span>H</span></div>
+                        <div class="poor-vision-option" id="bg-blue"><span>H</span></div>
+                    </div>
+                </div>
+                <div class="poor-vision-subblock">
+                    <span>Интервал:</span>
+                    <div class="poor-vision-options">
+                        <div class="poor-vision-option" id="ls-off">Обычный</div>
+                        <div class="poor-vision-option" id="ls-medium">Средний</div>
+                        <div class="poor-vision-option" id="ls-big">Большой</div>
+                    </div>
+                </div>
+                <div class="poor-vision-subblock">
+                    <span>Изображения:</span>
+                    <div class="poor-vision-options">
+                        <div class="poor-vision-option" id="images-off">Отключить</div>
+                    </div>
+                </div>
+                <div class="poor-vision-subblock">
+                    <span class="poor-vision-normal">Обычная версия</span>
+                </div>
+            </div>
+            <div class="base-header">
+                {% block header %}
+                <div class="header-left-block">
+                    <div class="header-menu-show">
+                        <div class="header-menu-show-subblock"></div>
+                        <div class="header-menu-show-subblock"></div>
+                        <div class="header-menu-show-subblock"></div>
+                    </div>
+                    <a href="{% url 'index' %}" class="med-button">Главная</a>
+                </div>
+                <a href="{% url 'index' %}" class="header-title-block">
+                    <h1>Региональный ресурсно - методический центр ранней помощи детям и их семьям в Иркутской области</h1>
+                </a>
+                <div class="header-right-block">
+                    <div class="header-contacts-block">
+                        <a href="mailto:{{ header_content.0 }}">{{ header_content.0 }}</a>
+                        <a href="tel:{{ header_content.2 }}">{{ header_content.1 }}</a>
+                    </div>
+                    <a href="mailto:{{ header_content.0 }}" class="header-img-block">
+                        <img src="{% static 'img/email.png' %}" class="header-img">
+                    </a>
+                    <a href="tel:{{ header_content.2 }}" class="header-img-block">
+                        <img src="{% static 'img/phone.png' %}" class="header-img">
+                    </a>
+                    <div class="header-poor-vision">
+                        <span>Версия для слабовидящих</span>
+                        <img src="{% static 'img/poor_vision.png' %}" class="header-poor-vision-img">
+                    </div>
+                </div>
+                {% endblock %}
+            </div>
+            <div class="base-content">
+                {% block content %}
+                {% endblock %}
+            </div>
+            <div class="base-footer">
+                {% block footer %}
+                {% endblock %}
+            </div>
+        </div>
+        <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(96571931, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/96571931" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+    </body>
+</html>

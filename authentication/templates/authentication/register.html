@@ -1,0 +1,107 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css'%}">
+<link rel="stylesheet" href="{% static 'css/summernote.min.css'%}">
+<style>
+    html, body {
+        font-size: 16px;
+        line-height: 1;
+        font-family: serif;
+    }
+
+    a:hover {
+        text-decoration: none;
+    }
+
+    h1, h2, h3 {
+        font-weight: bolder;
+        margin: 0;
+    }
+    
+    #id_description {
+        display: none;
+    }
+
+    .faq-form-block {
+        width: auto !important;
+    }
+
+    @media (max-width: 400px) {
+        .faq-form-block {
+            width: 100% !important;
+            padding: 1.5rem 10px !important;
+            box-sizing: border-box;
+        }
+
+        .edit-profile-photo-block {
+            width: calc(100% - 20px) !important;
+        }
+    }
+</style>
+{% endblock %}
+{% block js %}
+<link href="{% static 'css/jquery-ui.min.css' %}" rel="stylesheet">
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/croppie.css' %}" />
+<script src="{% static 'js/croppie.js' %}"></script>
+<script src="{% static 'js/register.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/summernote.min.js' %}"></script>
+<script src="{% static 'js/summernote-ru-RU.min.js' %}"></script>
+{% endblock %}
+{% block content %}
+<h1 class="page-title">Регистрация</h1>
+<div class="separator"></div>
+<p class="consultation-intro">{{ text|safe }}</p>
+<form action="{% url 'authentication:register' %}" class="consultation-form register-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="consultation-form-subblock">
+        {% for field in first_block %}
+            {{ field }}
+        {% endfor %}
+    </div>
+    <div class="consultation-form-subblock">
+        <div class="med-input register-fake-select" id="register-fake-select">
+            <img src="{% static 'img/menu-arrow.svg' %}" alt="+" class="register-fake-select-arrow">
+            <div class="register-selected">Сферы деятельности в ранней помощи</div>
+            <div class="register-options-block"></div>
+        </div>
+        {% for field in second_block %}
+            {{ field }}
+            {% if field.name == 'photo' %}
+            <label for="id_photo" class="med-input register-photo-label">Фото профиля</label>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="consultation-form-subblock">
+        <div class="summernote"></div>
+        {% for field in third_block %}
+            {{ field }}
+        {% endfor %}
+        <div class="consultation-checkbox-block"><input type="checkbox" class="consultation-checkbox"><span>Даю согласие на обработку персональных данных</span></div>
+        <a {% if rules_url %}href="{% url 'custom:constructor' url=rules_url %}"{% else %}href="#"{% endif %} class="consultation-read-link">Правила обработки персональных данных</a>
+        <input type="submit" class="med-button register-submit" value="Зарегистрироваться">
+        <a href="{% url 'authentication:login' %}" class="consultation-read-link">Войти</a>
+    </div>
+</form>
+<div class="register-errors-block">
+    {% for field in first_block %}
+        {{ field.errors }}
+    {% endfor %}
+    {% for field in second_block %}
+        {{ field.errors }}
+    {% endfor %}
+    {% for field in third_block %}
+        {{ field.errors }}
+    {% endfor %}
+</div>
+<div class="faq-background">
+    <div class="faq-form-block">
+        <div class="edit-profile-photo-block">
+            <div class="edit-profile-photo"></div>
+        </div>
+        <div class="med-button edit-profile-photo-save">Сохранить</div>
+    </div>
+</div>
+{% endblock %}

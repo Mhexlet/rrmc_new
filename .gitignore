@@ -1,0 +1,22 @@
+# Игнорировать скрытые файлы и папки
+.DS_Store
+.venv/
+__pycache__/
+media/
+static/
+# Игнорировать файлы Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Игнорировать временные файлы и папки
+tmp.txt
+tmp/
+
+# Игнорировать файлы конфигурации и зависимости
+ecosystem.config.js
+tailwind.config.js
+
+# Игнорировать файлы, которые не нужны для отслеживания
+f.txt
+json

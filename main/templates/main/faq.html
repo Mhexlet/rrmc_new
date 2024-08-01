@@ -1,0 +1,56 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block js %}
+<script src='https://www.google.com/recaptcha/api.js'></script>
+<script src="{% static 'js/text-adjust.js' %}"></script>
+<script src="{% static 'js/faq.js' %}"></script>
+{% endblock %}
+{% block content %}
+<div class="faq-header">
+    <h3 class="page-title">Вопрос - Ответ</h3>
+    <h3 class="faq-ask-question med-button">Задайте свой вопрос</h3>
+</div>
+<div class="separator"></div>
+{% for question in object_list %}
+<div class="index-faq-block faq-faq-block">
+    <div class="index-faq-color-block" style="background-color: {{ question.1 }};"></div>
+    <span class="faq-asking-name">{{ question.0.name }}</span>
+    <span class="text-to-adjust faq-question" id="question-{{ question.0.pk }}">{{ question.0.question }}</span>
+    <p class="text-to-adjust index-answer" id="answer-{{ question.0.pk }}">{{ question.0.answer }}</p>
+</div>
+{% endfor %}
+<div class="paginator-menu">
+    {% if page_obj.has_previous %}
+        <a href="{% url 'faq_page' page_obj.previous_page_number %}" class="paginator-previous">
+            ↼&nbsp
+        </a>
+    {% else %}
+        &nbsp&nbsp&nbsp
+    {% endif %}
+      <p>
+          {% if page_obj %}
+            {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+          {% endif %}
+      </p>
+    {% if page_obj.has_next %}
+        <a href="{% url 'faq_page' page_obj.next_page_number %}" class="paginator-next">
+            &nbsp⇁
+        </a>
+    {% else %}
+        &nbsp&nbsp&nbsp
+    {% endif %}
+</div>
+{% if not object_list %}
+    <div class="faq-form-notification">На данный момент тут ничего нет</div>
+{% endif %}
+<div class="faq-background">
+    <div class="faq-form-block">
+        {% csrf_token %}
+        <span class="faq-form-notification"></span>
+        <input type="text" class="med-input faq-name-input" placeholder="Ваше имя">
+        <textarea class="med-input faq-question-input" placeholder="Ваш вопрос"></textarea>
+        <div class="form-group g-recaptcha" data-sitekey="6Lf_F2YoAAAAAAVQNp1zYPQk7S5cdxh7ylOkxGCU"></div>
+        <span class="med-button faq-form-submit">Отправить</span>
+    </div>
+</div>
+{% endblock %}

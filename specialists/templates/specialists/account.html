@@ -1,0 +1,162 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block js %}
+<script src="{% static 'js/text-adjust.js' %}"></script>
+<script src="{% static 'js/account.js' %}"></script>
+{% endblock %}
+{% block menu %}
+<a href="{% url 'index' %}" class="menu-page">Вернуться на сайт</a>
+<a href="{% url 'authentication:edit_profile_page' %}" class="menu-page">Редактировать профиль</a>
+<a href="{% url 'authentication:logout' %}" class="menu-page">Выйти</a>
+{% endblock %}
+{% block content %}
+<h3 class="page-title">Личный кабинет</h3>
+<div class="separator"></div>
+{% if not user.email_verified %}
+    <div class="account-email-verification-block">
+    {% if not user.is_verification_key_expired %}
+        Ваш адрес электронной почты не подтверждён. Письмо со ссылкой для подтверждения уже было отправлено на указанный вами адрес. 
+        <a href="{% url 'authentication:send_verify_email_page' %}" class="consultation-read-link">Нажмите, чтобы отправить письмо повторно.</a>
+    {% else %}
+        Ваш адрес электронной почты не подтверждён. Ключ подтверждения истёк. 
+        <a href="{% url 'authentication:renew_verification_key' %}" class="consultation-read-link">Нажмите, чтобы обновить ключ и отправить письмо со ссылкой для подтверждения на ваш адрес электронной почты.</a>
+    {% endif %}
+    </div>
+{% endif %}
+{% if user.approved %}
+    {% csrf_token %}
+    <div class="account-dashboard">
+        <div class="specialists-info">
+            <span class="specialists-info-label">Статей опубликовано: </span>{{ user.get_articles_count }}
+        </div>
+        <a href="{% url 'specialists:create_article_page' %}" class="med-button mini-med-button account-button">Разместить новый материал</a>
+    </div>
+    <div class="separator"></div>
+    <div class="profile-title">Материалы на рассмотрении</div>
+    <div class="account-block">
+        {% for application in not_treated %}
+        <div class="account-application-block" id="application-{{ application.pk }}">
+            <div class="account-application-content">
+                <span class="account-application-title text-to-adjust" id="tta-title-{{ application.pk }}">{{ application.article.title }}</span>
+                <span class="account-application-text text-to-adjust" id="tta-text-{{ application.pk }}">{{ application.article.text }}</span>
+                {% if application.article.get_files %}
+                    <div class="account-application-files">
+                        {% for file in application.article.get_files %}
+                            <div class="account-application-file-block">
+                                <a href="/media/{{ file.file }}" class="account-application-file">{{ file.extension }}</a>
+                                <span class="account-application-file-name">{% if file.name %}{{ file.name }}{% endif %}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="account-application-options">
+                <div class="index-news-date profile-article-date">Отправлено: {{ application.article.created_at }}</div>
+                <div class="account-application-buttons">
+                    <a href="{% url 'specialists:edit_article_page' application.article.pk %}" class="med-button mini-med-button">Редактировать</a>
+                    <span class="med-button account-delete-article mini-med-button" id="delete-{{ application.pk }}">Удалить статью</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% if not not_treated %}
+            <div class="account-block-none">Нет материалов в этой категории</div>
+        {% endif %}
+    </div>
+    <div class="separator"></div>
+    <div class="profile-title">Отклонено</div>
+    <div class="account-block">
+        {% for application in rejected %}
+        <div class="account-application-block" id="application-{{ application.pk }}">
+            <div class="account-application-content">
+                <span class="account-application-title text-to-adjust" id="tta-title-{{ application.pk }}">{{ application.article.title }}</span>
+                <span class="account-application-text text-to-adjust" id="tta-text-{{ application.pk }}">{{ application.article.text }}</span>
+                {% if application.article.get_files %}
+                    <div class="account-application-files">
+                        {% for file in application.article.get_files %}
+                            <div class="account-application-file-block">
+                                <a href="/media/{{ file.file }}" class="account-application-file">{{ file.extension }}</a>
+                                <span class="account-application-file-name">{% if file.name %}{{ file.name }}{% endif %}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="account-application-options">
+                <div class="index-news-date profile-article-date">Отправлено: {{ application.article.created_at }}</div>
+                <div class="account-application-buttons">
+                    <a href="{% url 'specialists:edit_article_page' application.article.pk %}" class="med-button mini-med-button">Редактировать</a>
+                    <span class="med-button account-delete-application mini-med-button" id="delete-{{ application.pk }}">Удалить статью</span>
+                </div>
+                <div class="account-application-comment">Комментарий: {{ application.comment }}</div>
+            </div>
+        </div>
+        {% endfor %}
+        {% if not rejected %}
+            <div class="account-block-none">Нет материалов в этой категории</div>
+        {% endif %}
+    </div>
+    <div class="separator"></div>
+    <div class="profile-title">История публикаций</div>
+    <div class="profile-articles-block">
+        {% for article in user.get_articles %}
+            <div class="profile-article-block" id="article-{{ article.pk }}">
+                <div class="profile-article-vertical-line"></div>
+                <div class="profile-article-icon-block">
+                    <img src="{% static 'img/article.png' %}" class="profile-article-icon">
+                </div>
+                <div class="account-article-content{% if article.hidden %} account-hidden{% endif %}">
+                    <div class="profile-article-content">
+                        <a href="{% url 'specialists:article' article.pk %}" class="index-link profile-article-title" id="tta-text-article-{{ article.pk }}">{{ article.title }}</a>
+                        <div class="index-news-date profile-article-date">{{ article.approved_at }}</div>
+                    </div>
+                    <div class="account-application-buttons">
+                        <span class="med-button account-hide-article mini-med-button" id="hide-{{ article.pk }}">
+                            {% if article.hidden %}Сделать видимой{% else %}Скрыть статью{% endif %}
+                        </span>
+                        <span class="med-button account-delete-article mini-med-button" id="delete-article-{{ article.pk }}">Удалить статью</span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% if not user.get_articles %}
+            <div class="account-block-none">Нет материалов в этой категории</div>
+        {% endif %}
+    </div>
+    <div class="faq-background">
+        <div class="faq-form-block">
+            <span class="faq-form-notification">Вы точно хотите удалить этот материал?</span>
+            <div class="account-delete-buttons">
+                <span class="med-button account-delete-confirm">Да</span>
+                <span class="med-button account-delete-cancel">Нет</span>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="profile-title">История заявок на одобрение профиля</div>
+    <div class="profile-articles-block">
+        {% for application in user.get_applications %}
+            <div class="profile-article-block">
+                <div class="profile-article-vertical-line"></div>
+                <div class="profile-article-icon-block">
+                    <img src="{% static 'img/application.png' %}" class="profile-article-icon">
+                </div>
+                <div class="profile-article-content">
+                    <div class="index-news-date profile-article-date">Отправлено: {{ application.time }}</div>
+                    <div class="index-news-date profile-article-date">Статус: 
+                        {% if application.treated and not application.response %}
+                            Отклонено</div> 
+                            <div class="account-application-comment">Комментарий: {{ application.comment }}</div>
+                        {% else %}
+                            На рассмотрении</div>
+                        {% endif %}
+                    </div>
+            </div>
+        {% endfor %}
+    </div>
+    <a href="{% url 'authentication:edit_profile_page' %}" class="med-button mini-med-button" style="display: block; width: 250px; margin-top: 20px;">Редактировать профиль</a>
+    {% if not user.application_exists %}
+        <a href="{% url 'authentication:send_application' %}" class="med-button mini-med-button" style="display: block; width: 250px; margin-top: 20px;">Отправить заявку</a>
+    {% endif %}
+{% endif %}
+{% endblock %}

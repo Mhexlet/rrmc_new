@@ -1,0 +1,11 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block menu %}
+<a href="{% url 'index' %}" class="menu-page">Вернуться на сайт</a>
+<a href="{% url 'specialists:account' %}" class="menu-page">Личный кабинет</a>
+<a href="{% url 'authentication:edit_profile_page' %}" class="menu-page">Редактировать профиль</a>
+<a href="{% url 'authentication:logout' %}" class="menu-page">Выйти</a>
+{% endblock %}
+{% block content %}
+<h1 class="faq-form-notification">{{ notification }}</h1>
+{% endblock %}

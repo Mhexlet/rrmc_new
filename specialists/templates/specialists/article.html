@@ -1,0 +1,38 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+{% if article.hidden and user.pk != article.author.pk %}
+    <div class="faq-form-notification">Эта статья скрыта и доступна только автору</div>
+{% else %}
+    <h3 class="page-title single-news-title">{{ article.title }}</h3>
+    <span class="index-news-date">{{ article.approved_at }}</span>
+    <div class="article-text">{{ article.text|safe }}</div>
+    <div class="separator"></div>
+    <div class="article-bottom">
+        <a href="{% url 'specialists:profile' article.author.pk %}" class="specialists-block">
+            <div class="specialists-img-block">
+                {% if article.author.registered %}
+                    <div class="specialists-registered">Р</div>
+                {% endif %}
+                <img src="/media/{{ article.author.photo }}" alt="photo" class="specialists-img">
+            </div>
+            <div class="specialists-info">
+                <span class="specialists-info-label">{{ article.author }}</span>
+            </div>
+        </a>
+        {% if files %}
+            <div class="article-files-block">
+                <h4 class="page-label">Прикреплённые файлы</h4>
+                <div class="article-files">
+                    {% for file in article.get_files %}
+                        <div class="page-file-block">
+                            <a href="/media/{{ file.file }}" class="page-file" target="_blank">{{ file.extension }}</a>
+                            <span class="page-file-name">{% if file.name %}{{ file.name }}{% endif %}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

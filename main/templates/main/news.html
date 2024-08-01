@@ -1,0 +1,49 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block js %}
+<script src="{% static 'js/text-adjust.js' %}"></script>
+{% endblock %}
+{% block content %}
+
+<h3 class="page-title">Новости</h3>
+<div class="news-news-block">
+    {% for n in object_list %}
+    <div class="separator"></div>
+    <div class="news-news-subblock">
+        <div class="news-news-color-block" style="background-color: {{ n.1 }};"></div>
+        <div class="news-news-left">
+            <a href="{% url 'single_news' pk=n.0.pk %}" class="text-to-adjust index-link" id="news-{{ n.0.pk }}">{{ n.0.title }}</a>
+            <span class="text-to-adjust index-news-text" id="news-text-{{ n.0.pk }}">{{ n.0.content|safe }}</span>
+            <span class="index-news-date">{{ n.0.date }}</span>
+        </div>
+        <div class="news-news-img-block">
+            <img src="/media/{{ n.0.image }}" alt="image" class="index-news-img">
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="paginator-menu">
+    {% if page_obj.has_previous %}
+        <a href="{% url 'news_page' page_obj.previous_page_number %}" class="paginator-previous">
+            ↼&nbsp
+        </a>
+    {% else %}
+        &nbsp&nbsp&nbsp
+    {% endif %}
+      <p>
+          {% if page_obj %}
+            {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+          {% endif %}
+      </p>
+    {% if page_obj.has_next %}
+        <a href="{% url 'news_page' page_obj.next_page_number %}" class="paginator-next">
+            &nbsp⇁
+        </a>
+    {% else %}
+        &nbsp&nbsp&nbsp
+    {% endif %}
+</div>
+{% if not object_list %}
+    <div class="faq-form-notification">На данный момент тут ничего нет</div>
+{% endif %}
+{% endblock %}

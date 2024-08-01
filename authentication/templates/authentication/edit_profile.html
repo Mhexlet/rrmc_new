@@ -1,0 +1,232 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css'%}">
+<link rel="stylesheet" href="{% static 'css/summernote.min.css'%}">
+<style>
+    html, body {
+        font-size: 16px;
+        line-height: 1;
+        font-family: serif;
+    }
+
+    a:hover {
+        text-decoration: none;
+    }
+
+    h1, h2, h3 {
+        font-weight: bolder;
+        margin: 0;
+    }
+
+    .note-editor {
+        display: none;
+    }
+
+    .faq-form-block {
+        width: auto !important;
+    }
+
+    @media (max-width: 400px) {
+        .faq-form-block {
+            width: 100% !important;
+            padding: 1.5rem 10px !important;
+            box-sizing: border-box;
+        }
+
+        .edit-profile-photo-block {
+            width: calc(100% - 20px) !important;
+        }
+    }
+</style>
+{% endblock %}
+{% block js %}
+<script src='https://www.google.com/recaptcha/api.js'></script>
+<link rel="stylesheet" href="{% static 'css/croppie.css' %}" />
+<script src="{% static 'js/croppie.js' %}"></script>
+<link href="{% static 'css/jquery-ui.min.css' %}" rel="stylesheet">
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/edit_profile.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/summernote.min.js' %}"></script>
+<script src="{% static 'js/summernote-ru-RU.min.js' %}"></script>
+{% endblock %}
+{% block menu %}
+<a href="{% url 'index' %}" class="menu-page">Вернуться на сайт</a>
+<a href="{% url 'specialists:account' %}" class="menu-page">Личный кабинет</a>
+<a href="{% url 'authentication:edit_profile_page' %}" class="menu-page">Редактировать профиль</a>
+<a href="{% url 'authentication:logout' %}" class="menu-page">Выйти</a>
+{% endblock %}
+{% block content %}
+<input type="hidden" value="{{ user.get_birthdate }}" id="user_birthdate">
+<h1 class="page-title">Ваш профиль</h1>
+<div class="separator"></div>
+<div class="edit-profile-content">
+    <div class="edit-profile-subblock">
+        <div class="specialists-info">
+            <div class="specialists-img-block">
+                <img src="/media/{{ user.photo }}" alt="photo" class="specialists-img">
+            </div>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-photo"></div>
+        </div>
+        <div class="specialists-info">
+            <span>
+                <span class="specialists-info-label" id="label-last_name">Фамилия: </span>
+                <span id="data-last_name">{{ user.last_name }}</span>
+            </span>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-last_name"></div>
+        </div>
+        <div class="specialists-info">
+            <span>
+                <span class="specialists-info-label" id="label-first_name">Имя: </span>
+                <span id="data-first_name">{{ user.first_name }}</span>
+            </span>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-first_name"></div>
+        </div>
+        <div class="specialists-info">
+            <span>
+                <span class="specialists-info-label" id="label-patronymic">Отчество: </span>
+                <span id="data-patronymic">{{ user.patronymic }}</span>
+            </span>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-patronymic"></div>
+        </div>
+        <div class="specialists-info">
+            <span>
+                <span class="specialists-info-label" id="label-birthdate">Дата рождения: </span>
+                <span id="data-birthdate">{{ user.birthdate }}</span>
+                <input type="hidden" value="{{ user.birthdate|safe }}" id="birthdate-hidden">
+            </span>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-birthdate"></div>
+        </div>
+        <div class="specialists-info">
+            <span>
+                <span class="specialists-info-label" id="label-email">Email: </span>
+                <span id="data-email">{{ user.email }}</span>
+            </span>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-email"></div>
+        </div>
+        <div class="specialists-info">
+            <span>
+                <span class="specialists-info-label" id="label-phone_number">Номер телефона: </span>
+                <span id="data-phone_number">{{ user.phone_number }}</span>
+            </span>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-phone_number"></div>
+        </div>
+    </div>
+    <div class="edit-profile-subblock">
+        <div class="specialists-info">
+            <span>
+                <span class="specialists-info-label" id="label-field_of_activity">Сферы деятельности: </span>
+                <div id="data-field_of_activity">
+                    {% for field in user.fields_of_activity_list %}
+                        <p id="foa-{{ field.foa.pk }}">{{ field }}</p>
+                    {% endfor %}
+                </div>
+            </span>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-field_of_activity"></div>
+        </div>
+        <div class="specialists-info">
+            <span>
+                <span class="specialists-info-label" id="label-profession">Специализация: </span>
+                <span id="data-profession">{{ user.profession }}</span>
+            </span>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-profession"></div>
+        </div>
+        <div class="specialists-info">
+            <span>
+                <span class="specialists-info-label" id="label-city">Город: </span>
+                <span id="data-city">{{ user.city }}</span>
+            </span>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-city"></div>
+        </div>
+        <div class="specialists-info">
+            <span>
+                <span class="specialists-info-label" id="label-workplace_name">Место работы: </span>
+                <span id="data-workplace_name">{{ user.workplace_name }}</span>
+            </span>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-workplace_name"></div>
+        </div>
+        <div class="specialists-info">
+            <span>
+                <span class="specialists-info-label" id="label-workplace_address">Адрес места работы: </span>
+                <span id="data-workplace_address">{{ user.workplace_address }}</span>
+            </span>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-workplace_address"></div>
+        </div>
+        <div class="specialists-info">
+            <span>
+                <span class="specialists-info-label" id="label-description">О себе: </span>
+                <span id="data-description">{{ user.description|safe }}</span>
+            </span>
+            <div class="edit-profile-edit-block"><img src="{% static '/img/application.png' %}" alt="изменить" class="edit-profile-edit-img" id="edit-description"></div>
+        </div>
+        <a href="{% url 'authentication:change_password' %}" class="med-button mini-med-button edit-profile-change-password">Поменять пароль</a>
+    </div>
+</div>
+<div class="edit-profile-waiting-wrapper"{% if not user.get_waiting_edits %} style="display: none;"{% endif %}>
+    <div class="separator"></div>
+    <div class="profile-title">Заявки на рассмотрении</div>
+    <div class="edit-profile-applications edit-profile-waiting-block">
+        {% for application in user.get_waiting_edits %}
+            <div class="edit-profile-application application-{{ application.field }}" id="application-{{ application.pk }}">
+                <div class="edit-profile-application-left">
+                    <span class="specialists-info-label">{{ application.verbose_field }}: </span>
+                    {% if application.field == 'photo' %}
+                        <div class="specialists-img-block">
+                            <img src="/media/{{ application.new_value }}" alt="photo" class="specialists-img">
+                        </div>
+                    {% else %}
+                        <span class="edit-profile-application-value">{{ application.get_value|safe }}</span>
+                    {% endif %}
+                </div>
+                <div class="med-button mini-med-button edit-profile-application-delete" id="application-delete-{{ application.pk }}">Удалить</div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="edit-profile-rejected-wrapper"{% if not user.get_rejected_edits %} style="display: none;"{% endif %}>
+    <div class="separator"></div>
+    <div class="profile-title">Отклонённые заявки</div>
+    <div class="edit-profile-applications edit-profile-rejected-block">
+        {% for application in user.get_rejected_edits %}
+            <div class="edit-profile-application application-{{ application.field }}">
+                <div class="edit-profile-application-left">
+                    <span class="specialists-info-label">{{ application.verbose_field }}: </span>
+                    {% if application.field == 'photo' %}
+                        <div class="specialists-img-block">
+                            <img src="/media/{{ application.new_value }}" alt="photo" class="specialists-img">
+                        </div>
+                    {% else %}
+                        <span class="edit-profile-application-value">{{ application.get_value|safe }}</span>
+                    {% endif %}
+                </div>
+                {% if application.comment %}
+                <div class="edit-profile-comment">Комментарий: {{ application.comment }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="faq-background">
+    <div class="faq-form-block">
+        {% csrf_token %}
+        <span class="faq-form-notification"></span>
+        <div class="faq-background-form-content">
+            <input type="text" class="med-input edit-profile-input">
+            <input type="date" class="med-input edit-profile-date-input" id="birthdate">
+            <input type="file" class="med-input edit-profile-photo-input" accept="image/png, image/gif, image/jpeg">
+            <div class="edit-profile-photo-block">
+                <div class="edit-profile-photo"></div>
+            </div>
+            <div class="med-input edit-profile-foas" id="edit-fake-select">
+                {% for field in fields_of_activity %}
+                    <div class="register-option" id="option-{{ field.pk }}">{{ field.name }}</div>
+                {% endfor %}
+            </div>
+            <div class="summernote"></div>
+            <div class="form-group g-recaptcha" data-sitekey="6Lf_F2YoAAAAAAVQNp1zYPQk7S5cdxh7ylOkxGCU"></div>
+            <span class="med-button edit-profile-submit">Сохранить</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

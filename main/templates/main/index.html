@@ -1,0 +1,73 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block js %}
+<script>
+    var slides = {{ slides|safe }};
+    var banners = {{ banners|safe }};
+    var links = {{ links|safe }};
+</script>
+<script src="{% static 'js/index.js' %}"></script>
+<script src="{% static 'js/text-adjust.js' %}"></script>
+{% endblock %}
+{% block content %}
+<div class="index-slider-block">
+    <div class="index-slider-left-arrow">
+        <img src="{% static 'img/menu-arrow.svg' %}" alt="<" class="index-slider-left-arrow-img">
+    </div>
+    <div class="index-slides-block">
+    </div>
+    <div class="index-slider-right-arrow">
+        <img src="{% static 'img/menu-arrow.svg' %}" alt=">" class="index-slider-right-arrow-img">
+    </div>
+</div>
+<div class="index-links-wrapper" {% if links_display %}style="display: flex; flex-direction: column;"{% else %}style="display: none;"{% endif %}>
+    <div class="separator"></div>
+    <div class="index-links-label index-link">{{ links_label }}</div>
+    <div class="index-banners-block">
+        <div class="index-link-left-arrow">
+            <img src="{% static 'img/menu-arrow.svg' %}" alt="<" class="index-banner-left-arrow-img">
+        </div>
+        <div class="index-links">
+        </div>
+        <div class="index-link-right-arrow">
+            <img src="{% static 'img/menu-arrow.svg' %}" alt=">" class="index-banner-right-arrow-img">
+        </div>
+    </div>
+</div>
+<div class="separator"></div>
+<div class="index-text">{{ text|safe }}</div>
+<div class="separator"></div>
+<a href="{% url 'news' %}" class="index-link">Новости</a>
+<div class="index-news-block">
+    {% for n in news %}
+    <div class="index-news-subblock">
+        <div class="index-news-img-block">
+            <img src="/media/{{ n.image }}" alt="image" class="index-news-img">
+        </div>
+        <a href="{% url 'single_news' pk=n.pk %}" class="text-to-adjust index-link" id="news-{{ n.pk }}">{{ n.title }}</a>
+        <span class="text-to-adjust index-news-text" id="news-text-{{ n.pk }}">{{ n.content|safe }}</span>
+        <span class="index-news-date">{{ n.date }}</span>
+    </div>
+    {% endfor %}
+</div>
+<div class="separator"></div>
+<div class="index-banners-block">
+    <div class="index-banner-left-arrow">
+        <img src="{% static 'img/menu-arrow.svg' %}" alt="<" class="index-banner-left-arrow-img">
+    </div>
+    <div class="index-banners">
+    </div>
+    <div class="index-banner-right-arrow">
+        <img src="{% static 'img/menu-arrow.svg' %}" alt=">" class="index-banner-right-arrow-img">
+    </div>
+</div>
+<!-- <div class="separator"></div>
+<a href="{% url 'faq' %}" class="index-link">Вопрос - Ответ</a>
+{% for question in questions %}
+<div class="index-faq-block">
+    <div class="index-faq-color-block" style="background-color: {{ question.1 }};"></div>
+    <a href="{% url 'faq' %}" class="text-to-adjust index-link" id="question-{{ question.0.pk }}">{{ question.0.question }}</a>
+    <p class="text-to-adjust index-answer" id="answer-{{ question.0.pk }}">{{ question.0.answer }}</p>
+</div>
+{% endfor %} -->
+{% endblock %}

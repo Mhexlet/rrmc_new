@@ -1,0 +1,10 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+<h3 class="page-title single-news-title">{{ current_news.title }}</h3>
+<span class="index-news-date">{{ current_news.date }}</span>
+<div class="single-news-img-block">
+    <img src="/media/{{ current_news.image }}" alt="image" class="index-news-img">
+</div>
+<div class="news-news-content">{{ current_news.content|safe }}</div>
+{% endblock %}

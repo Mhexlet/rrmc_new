@@ -1,0 +1,49 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{{ title }}{% endblock %}</title>
+        {% block css %}
+        <link rel="stylesheet" href="{% static 'css/fonts.css'%}">
+        <link rel="stylesheet" href="{% static 'css/style.css'%}">
+        {% endblock %}
+        <link type="image/x-icon" href="/static/img/logo.png" rel="shortcut icon" id="head_icon">
+        <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+        <script src="{% static 'js/add_album.js' %}"></script>
+        <script async src="https://cse.google.com/cse.js?cx=92e3da7a8ab554250"></script>
+        {% block js %}
+        {% endblock %}
+    </head>
+    <body>
+        <div class="custom-content">
+            {% csrf_token %}
+            <div class="custom-notification faq-form-notification"></div>
+            <h3 class="custom-label">Страница</h3>
+            <div class="med-input register-fake-select">
+                <img src="{% static 'img/menu-arrow.svg' %}" alt="+" class="register-fake-select-arrow">
+                <div class="register-selected" id="selected-{{ pages.0.pk }}">{{ pages.0.title }}</div>
+                <div class="register-options-block">
+                    {% for page in pages %}
+                    <span class="register-option" id="option-{{ page.pk }}">{{ page.title }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <h3 class="custom-label">Название альбома</h3>
+            <input type="text" class="med-input" id="custom-name">
+            <h3 class="custom-label">Изображения</h3>
+            <div class="create-article-files">
+                <div class="create-article-file-block">
+                    <input type="text" class="med-input create-article-file-name" placeholder="Подпись к файлу" id="name-0">
+                    <input type="file" accept="image/*" class="med-input create-article-file" id="file-0">
+                    <div class="create-article-remove-file">+</div>
+                </div>
+                <div class="create-article-add-file">+</div>
+            </div>
+            <span class="med-button custom-submit" id="album-submit">Добавить</span>
+        </div>
+    </body>
+</html>
