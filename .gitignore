@@ -9,6 +9,7 @@ static/
 Dockerfile
 docker-compose.yml
 
+settings.py
 # Игнорировать временные файлы и папки
 tmp.txt
 tmp/
