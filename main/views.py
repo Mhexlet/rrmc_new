@@ -6,6 +6,12 @@ from .models import QuestionAnswer, Review, MainSliderImage, Application, Place,
 from django.conf import settings
 from django.core.mail import send_mail
 from MedProject.settings import BASE_URL
+from .serializers import NewsSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.utils.dateparse import parse_date
+
+
 
 
 def index(request):
@@ -264,3 +270,31 @@ def single_news(request, pk):
     }
 
     return render(request, 'main/single_news.html', context)
+
+# class NewsSearchView(APIView):
+#     def get(self, request):
+#         query = request.GET.get('query', '')
+#         news = News.objects.filter(title__icontains=query) | News.objects.filter(content__icontains=query)
+#         serializer = NewsSerializer(news, many=True)
+#         return Response(serializer.data)
+class NewsSearchView(APIView):
+    def get(self, request):
+        query = request.GET.get('query', '')
+        date_from = request.GET.get('date_from', '')
+        date_to = request.GET.get('date_to', '')
+
+        news = News.objects.all()
+
+        if query:
+            news = news.filter(title__icontains=query) | news.filter(content__icontains=query)
+
+        if date_from:
+            date_from = parse_date(date_from)
+            news = news.filter(date__gte=date_from)
+
+        if date_to:
+            date_to = parse_date(date_to)
+            news = news.filter(date__lte=date_to)
+
+        serializer = NewsSerializer(news, many=True)
+        return Response(serializer.data)

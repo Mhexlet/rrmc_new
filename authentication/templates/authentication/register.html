@@ -18,7 +18,7 @@
         font-weight: bolder;
         margin: 0;
     }
-    
+
     #id_description {
         display: none;
     }
@@ -38,6 +38,20 @@
             width: calc(100% - 20px) !important;
         }
     }
+
+    .password-input-container {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
 </style>
 {% endblock %}
 {% block js %}
@@ -49,6 +63,22 @@
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/summernote.min.js' %}"></script>
 <script src="{% static 'js/summernote-ru-RU.min.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.password-toggle').forEach(function(toggleButton) {
+        toggleButton.addEventListener('click', function() {
+            const passwordInput = this.previousElementSibling;
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.innerHTML = '🙈'; // Иконка для скрытия пароля
+            } else {
+                passwordInput.type = 'password';
+                this.innerHTML = '👁️'; // Иконка для отображения пароля
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
 {% block content %}
 <h1 class="page-title">Регистрация</h1>
@@ -58,7 +88,14 @@
     {% csrf_token %}
     <div class="consultation-form-subblock">
         {% for field in first_block %}
-            {{ field }}
+            {% if field.name == 'password1' or field.name == 'password2' %}
+                <div class="password-input-container">
+                    {{ field }}
+                    <button type="button" class="password-toggle" aria-label="Toggle Password Visibility">👁️</button>
+                </div>
+            {% else %}
+                {{ field }}
+            {% endif %}
         {% endfor %}
     </div>
     <div class="consultation-form-subblock">
@@ -67,10 +104,11 @@
             <div class="register-selected">Сферы деятельности в ранней помощи</div>
             <div class="register-options-block"></div>
         </div>
+        <input type="hidden" name="field_of_activity" id="id_field_of_activity" value="">
         {% for field in second_block %}
             {{ field }}
             {% if field.name == 'photo' %}
-            <label for="id_photo" class="med-input register-photo-label">Фото профиля</label>
+                <label for="id_photo" class="med-input register-photo-label">Фото профиля</label>
             {% endif %}
         {% endfor %}
     </div>
@@ -79,7 +117,10 @@
         {% for field in third_block %}
             {{ field }}
         {% endfor %}
-        <div class="consultation-checkbox-block"><input type="checkbox" class="consultation-checkbox"><span>Даю согласие на обработку персональных данных</span></div>
+        <div class="consultation-checkbox-block">
+            <input type="checkbox" class="consultation-checkbox">
+            <span>Даю согласие на обработку персональных данных</span>
+        </div>
         <a {% if rules_url %}href="{% url 'custom:constructor' url=rules_url %}"{% else %}href="#"{% endif %} class="consultation-read-link">Правила обработки персональных данных</a>
         <input type="submit" class="med-button register-submit" value="Зарегистрироваться">
         <a href="{% url 'authentication:login' %}" class="consultation-read-link">Войти</a>

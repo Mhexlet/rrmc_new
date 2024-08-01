@@ -127,6 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <h3 class="page-title">Специалисты ранней помощи</h3>
 <div class="separator"></div>
 <div class="filter-container">
+    <h2 class="filter-title">Поиск специалиста</h2>
+
     <div class="search-and-reset">
         <input type="text" id="search-input" placeholder="Можно ввести ФИО, специализацию, либо место работы..." />
         <button id="reset-filters" class="reset-filters-btn">Сбросить фильтры</button>
@@ -151,7 +153,9 @@ document.addEventListener('DOMContentLoaded', function() {
     <a href="{% url 'specialists:profile' specialist.pk %}" class="specialists-block">
         <div class="specialists-img-block">
             {% if specialist.registered %}
-                <div class="specialists-registered">Р</div>
+            <div class="specialists-registered" title="Реестровый специалист">Р</div>
+
+
             {% endif %}
             <img src="/media/{{ specialist.photo }}" alt="photo" class="specialists-img">
         </div>

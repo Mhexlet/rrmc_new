@@ -20,6 +20,7 @@ from django.conf.urls import include
 from django.conf.urls.static import static
 from MedProject import settings
 import main.views as main
+from main.views import NewsSearchView
 from django.views.i18n import JavaScriptCatalog
 from main.decorators import check_recaptcha
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, \
@@ -41,6 +42,7 @@ urlpatterns = [
     path('geography/', main.geography, name='geography'),
     path('news/', main.NewsList.as_view(), name='news'),
     path('news/<int:page>/', main.NewsList.as_view(), name='news_page'),
+    path('news/search/', NewsSearchView.as_view(), name='news_search'),
     path('single_news/<int:pk>/', main.single_news, name='single_news'),
 
     path('custom/', include('custom.urls', namespace='custom')),
