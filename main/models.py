@@ -132,7 +132,7 @@ class Institution(models.Model):
 
 class News(models.Model):
 
-    title = models.CharField(max_length=128, verbose_name='Заголовок')
+    title = models.CharField(max_length=256, verbose_name='Заголовок')
     content = models.TextField(verbose_name='Содержимое')
     image = models.ImageField(upload_to='tmp/', verbose_name='Изображение')
     date = models.DateTimeField(auto_now=True, verbose_name='Дата публикации')

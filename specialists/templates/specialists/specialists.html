@@ -67,10 +67,23 @@ document.addEventListener('DOMContentLoaded', function() {
         const data = await fetchSpecialists();
         specialistsContainer.innerHTML = ''; // Очищаем контейнер перед вставкой отфильтрованных специалистов
 
+        // const filteredSpecialists = data.filter(specialist => {
+        //     const fullName = `${specialist.first_name} ${specialist.patronymic} ${specialist.last_name}`.toLowerCase();
+        //     const isRegisteredMatch = isRegistered ? specialist.registered : true;
+        //     return fullName.includes(query) && isRegisteredMatch;
+        // });
         const filteredSpecialists = data.filter(specialist => {
             const fullName = `${specialist.first_name} ${specialist.patronymic} ${specialist.last_name}`.toLowerCase();
+            const profession = specialist.profession.toLowerCase();
+            const city = specialist.city.toLowerCase(); // Место работы (город)
+
             const isRegisteredMatch = isRegistered ? specialist.registered : true;
-            return fullName.includes(query) && isRegisteredMatch;
+            
+            // Добавление условий для поиска по специализации и месту работы
+            return (
+                (fullName.includes(query) || profession.includes(query) || city.includes(query)) &&
+                isRegisteredMatch
+            );
         });
 
         if (filteredSpecialists.length === 0) {

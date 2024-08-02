@@ -31,7 +31,7 @@ class Section(models.Model):
 
 class Page(models.Model):
 
-    title = models.CharField(max_length=100, unique=True, verbose_name='Заголовок страницы')
+    title = models.CharField(max_length=256, unique=True, verbose_name='Заголовок страницы')
     url = models.CharField(max_length=128, unique=True, blank=True, verbose_name='URL страницы (заполняется автоматически)')
     section = models.ForeignKey(Section, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Раздел меню (оставьте незаполненным, если страница не является подразделом)', related_name='pages')
     content = models.TextField(verbose_name='Содержимое')
