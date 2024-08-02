@@ -295,6 +295,9 @@ class NewsSearchView(APIView):
         if date_to:
             date_to = parse_date(date_to)
             news = news.filter(date__lte=date_to)
+        
+        # Сортировка по дате (новые вверху)
+        news = news.order_by('-date')
 
         serializer = NewsSerializer(news, many=True)
         return Response(serializer.data)
