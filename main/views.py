@@ -249,6 +249,7 @@ class NewsList(ListView):
         news_list = []
 
         for i, n in enumerate(news_set):
+            
             news_list.append((n, colors[i % 5]))
         return news_list
 

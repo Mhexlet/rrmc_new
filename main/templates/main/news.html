@@ -21,51 +21,60 @@
 
         // Функция для отображения результатов поиска
         function renderResults(news) {
-            var container = $('.news-news-block');
-            container.empty(); // Очистить предыдущие результаты
+    var container = $('.news-news-block');
+    container.empty(); // Очистить предыдущие результаты
 
-            // Массив цветов, которые будут назначаться циклически
-            var colors = ['#4F55DA', '#F06445', '#E8C444', '#B8D935', '#4FC9DA'];
+    // Массив цветов, которые будут назначаться циклически
+    var colors = ['#4F55DA', '#F06445', '#E8C444', '#B8D935', '#4FC9DA'];
 
-            if (news.length === 0) {
-                container.append('<div class="faq-form-notification">На данный момент тут ничего нет</div>');
-            } else {
-                news.forEach(function(item, index) {
-                    // Определение цвета на основе индекса элемента и длины массива цветов
-                    var backgroundColor = colors[index % colors.length];
-                    var fullImageUrl = `${window.location.origin}${item.image}`;
+    if (news.length === 0) {
+        container.append('<div class="faq-form-notification">На данный момент тут ничего нет</div>');
+    } else {
+        news.forEach(function(item, index) {
+            // Определение цвета на основе индекса элемента и длины массива цветов
+            var backgroundColor = colors[index % colors.length];
+            var fullImageUrl = `${window.location.origin}${item.image}`;
 
-                    // Преобразование даты в нужный формат
-                    var date = new Date(item.date);
-                    var options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-                    var formattedDate = new Intl.DateTimeFormat('ru-RU', options).format(date);
+            // Преобразование даты в нужный формат
+            var date = new Date(item.date);
+            var options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+            var formattedDate = new Intl.DateTimeFormat('ru-RU', options).format(date);
 
-                    // Создание HTML-блока новости
-                    var newsHtml = `
-                        <div class="separator"></div>
-                        <div class="news-news-subblock">
-                            <div class="news-news-color-block" style="background-color: ${backgroundColor};"></div>
-                            <div class="news-news-left">
-                                <a href="/single_news/${item.pk}" class="text-to-adjust index-link" id="news-${item.pk}">${item.title}</a>
-                                <span class="text-to-adjust index-news-text left-aligned" id="news-text-${item.pk}"></span>
-                                <span class="index-news-date">${formattedDate}</span>
-                            </div>
-                            <div class="news-news-img-block">
-                                <img src="${fullImageUrl}" alt="image" class="index-news-img">
-                            </div>
-                        </div>`;
-
-                    // Вставка HTML-блока в контейнер
-                    container.append(newsHtml);
-
-                    // Вставка контента с HTML
-                    var newsTextElement = document.getElementById(`news-text-${item.pk}`);
-                    if (newsTextElement) {
-                        newsTextElement.innerHTML = item.content;
-                    }
-                });
+            // Функция для обрезки текста с сохранением HTML структуры
+            function truncateHtml(html, maxLength) {
+                var div = document.createElement('div');
+                div.innerHTML = html;
+                var text = div.innerText || div.textContent;
+                return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
             }
-        }
+
+            // Создание HTML-блока новости
+            var newsHtml = `
+                <div class="separator"></div>
+                <div class="news-news-subblock">
+                    <div class="news-news-color-block" style="background-color: ${backgroundColor};"></div>
+                    <div class="news-news-left">
+                        <a href="/single_news/${item.pk}" class="text-to-adjust index-link" id="news-${item.pk}">${item.title}</a>
+                        <span class="text-to-adjust index-news-text left-aligned" id="news-text-${item.pk}"></span>
+                        <span class="index-news-date">${formattedDate}</span>
+                    </div>
+                    <div class="news-news-img-block">
+                        <img src="${fullImageUrl}" alt="image" class="index-news-img">
+                    </div>
+                </div>`;
+
+            // Вставка HTML-блока в контейнер
+            container.append(newsHtml);
+
+            // Вставка обрезанного контента
+            var newsTextElement = document.getElementById(`news-text-${item.pk}`);
+            if (newsTextElement) {
+                var truncatedContent = truncateHtml(item.content, 200);
+                newsTextElement.innerHTML = truncatedContent;
+            }
+        });
+    }
+}
 
         // Обработчик ввода в поле поиска
         $('#search-input').on('input', function() {
@@ -117,7 +126,10 @@
         <div class="news-news-color-block" style="background-color: {{ n.1 }};"></div>
         <div class="news-news-left">
             <a href="{% url 'single_news' pk=n.0.pk %}" class="text-to-adjust index-link" id="news-{{ n.0.pk }}">{{ n.0.title }}</a>
-            <span class="text-to-adjust index-news-text" id="news-text-{{ n.0.pk }}">{{ n.0.content|safe }}</span>
+            <span class="text-to-adjust index-news-text" id="news-text-{{ n.0.pk }}">{{ n.0.content|truncatechars_html:200|safe }}</span>
+
+
+
             <span class="index-news-date">{{ n.0.date }}</span>
         </div>
         <div class="news-news-img-block">
