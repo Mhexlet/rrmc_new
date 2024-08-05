@@ -76,12 +76,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const fullName = `${specialist.first_name} ${specialist.patronymic} ${specialist.last_name}`.toLowerCase();
             const profession = specialist.profession.toLowerCase();
             const city = specialist.city.toLowerCase(); // Место работы (город)
+            const workplaceName = specialist.workplace_name.toLowerCase(); // Название места работы
 
             const isRegisteredMatch = isRegistered ? specialist.registered : true;
             
             // Добавление условий для поиска по специализации и месту работы
             return (
-                (fullName.includes(query) || profession.includes(query) || city.includes(query)) &&
+                (fullName.includes(query) || profession.includes(query) || city.includes(query) || workplaceName.includes(query)) &&
                 isRegisteredMatch
             );
         });

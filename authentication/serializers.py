@@ -14,4 +14,4 @@ class SpecialistSerializer(serializers.ModelSerializer):
     fields_of_activity = serializers.StringRelatedField(many=True)
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'patronymic', 'last_name', 'photo', 'city', 'fields_of_activity', 'profession', 'registered']
+        fields = ['id', 'first_name', 'patronymic', 'last_name', 'photo', 'city', 'fields_of_activity', 'profession', 'registered', 'workplace_name', ]

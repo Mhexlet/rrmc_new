@@ -121,7 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <input type="checkbox" class="consultation-checkbox">
             <span>Даю согласие на обработку персональных данных</span>
         </div>
-        <a {% if rules_url %}href="{% url 'custom:constructor' url=rules_url %}"{% else %}href="#"{% endif %} class="consultation-read-link">Правила обработки персональных данных</a>
+        <a href="{{ BASE_URL }}/custom/personal_data/" target="_blank" class="consultation-read-link">Правила обработки персональных данных</a>
+        <!-- <a {% if rules_url %}href="{% url 'custom:constructor' url=rules_url %}"{% else %}href="#"{% endif %} class="consultation-read-link">Правила обработки персональных данных</a> -->
         <input type="submit" class="med-button register-submit" value="Зарегистрироваться">
         <a href="{% url 'authentication:login' %}" class="consultation-read-link">Войти</a>
     </div>
