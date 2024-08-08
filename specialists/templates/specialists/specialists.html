@@ -17,6 +17,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
         filterSpecialists(); // Обновляем список специалистов
     }
+    // Функция для обновления количества специалистов
+    async function updateSpecialistsCount(count) {
+        const countElement = document.getElementById('specialists-count');
+        countElement.textContent = `Количество найденных специалистов: ${count}`;
+        
+        // Добавляем класс для анимации
+        countElement.classList.add('updated');
+        
+        // Убираем класс через 0.5 секунды, чтобы анимация могла повторяться
+        setTimeout(() => {
+            countElement.classList.remove('updated');
+        }, 500);
+    }
 
     // Событие для кнопки сброса фильтров
     document.getElementById('reset-filters').addEventListener('click', resetFilters);
@@ -60,71 +73,128 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // async function filterSpecialists() {
+    //     const query = searchInput.value.toLowerCase();
+    //     const isRegistered = registeredFilter.checked;
+
+    //     const data = await fetchSpecialists();
+    //     specialistsContainer.innerHTML = ''; // Очищаем контейнер перед вставкой отфильтрованных специалистов
+    //     const filteredSpecialists = data.filter(specialist => {
+    //         const fullName = `${specialist.first_name} ${specialist.patronymic} ${specialist.last_name}`.toLowerCase();
+    //         const profession = specialist.profession.toLowerCase();
+    //         const city = specialist.city.toLowerCase(); // Место работы (город)
+    //         const workplaceName = specialist.workplace_name.toLowerCase(); // Название места работы
+
+    //         const isRegisteredMatch = isRegistered ? specialist.registered : true;
+            
+    //         // Добавление условий для поиска по специализации и месту работы
+    //         return (
+    //             (fullName.includes(query) || profession.includes(query) || city.includes(query) || workplaceName.includes(query)) &&
+    //             isRegisteredMatch
+    //         );
+    //     });
+
+    //     if (filteredSpecialists.length === 0) {
+    //         document.getElementById('no-specialists-message').style.display = 'block';
+    //     } else {
+    //         document.getElementById('no-specialists-message').style.display = 'none';
+    //     }
+
+    //     filteredSpecialists.forEach(specialist => {
+    //         const specialistElement = document.createElement('a');
+    //         specialistElement.href = `/specialists/profile/${specialist.id}`;
+    //         console.log('Fields of activity:', specialist.fields_of_activity);
+
+    //         // Преобразуем массив символов в строку и затем в массив строк
+    //         const fieldsOfActivityString = specialist.fields_of_activity.join('');
+    //         const fieldsOfActivityArray = fieldsOfActivityString.split(', ');
+            
+    //         specialistElement.className = 'specialists-block';
+    //         specialistElement.innerHTML = `
+    //             <div class="specialists-img-block">
+    //                 ${specialist.registered ? '<div class="specialists-registered">Р</div>' : ''}
+    //                 <img src="${specialist.photo}" alt="photo" class="specialists-img">
+    //             </div>
+    //             <div class="specialists-info">
+    //                 <span class="specialists-info-label">ФИО: </span>${specialist.first_name} ${specialist.patronymic} ${specialist.last_name}
+    //             </div>
+    //             <div class="specialists-info">
+    //                 <span class="specialists-info-label">Город: </span>${specialist.city}
+    //             </div>
+    //             <div class="specialists-info">
+
+    //                 <span class="specialists-info-label">Сферы деятельности в ранней помощи: </span>${fieldsOfActivityArray.join(', ')}
+    //             </div>
+    //             <div class="specialists-info">
+    //                 <span class="specialists-info-label">Специализация: </span>${specialist.profession}
+    //             </div>
+    //         `;
+    //         specialistsContainer.appendChild(specialistElement);
+    //     });
+    // }
     async function filterSpecialists() {
-        const query = searchInput.value.toLowerCase();
-        const isRegistered = registeredFilter.checked;
+    const query = searchInput.value.toLowerCase();
+    const isRegistered = registeredFilter.checked;
 
-        const data = await fetchSpecialists();
-        specialistsContainer.innerHTML = ''; // Очищаем контейнер перед вставкой отфильтрованных специалистов
+    const data = await fetchSpecialists();
+    specialistsContainer.innerHTML = ''; // Очищаем контейнер перед вставкой отфильтрованных специалистов
 
-        // const filteredSpecialists = data.filter(specialist => {
-        //     const fullName = `${specialist.first_name} ${specialist.patronymic} ${specialist.last_name}`.toLowerCase();
-        //     const isRegisteredMatch = isRegistered ? specialist.registered : true;
-        //     return fullName.includes(query) && isRegisteredMatch;
-        // });
-        const filteredSpecialists = data.filter(specialist => {
-            const fullName = `${specialist.first_name} ${specialist.patronymic} ${specialist.last_name}`.toLowerCase();
-            const profession = specialist.profession.toLowerCase();
-            const city = specialist.city.toLowerCase(); // Место работы (город)
-            const workplaceName = specialist.workplace_name.toLowerCase(); // Название места работы
+    const filteredSpecialists = data.filter(specialist => {
+        const fullName = `${specialist.first_name} ${specialist.patronymic} ${specialist.last_name}`.toLowerCase();
+        const profession = specialist.profession.toLowerCase();
+        const city = specialist.city.toLowerCase(); // Место работы (город)
+        const workplaceName = specialist.workplace_name.toLowerCase(); // Название места работы
 
-            const isRegisteredMatch = isRegistered ? specialist.registered : true;
-            
-            // Добавление условий для поиска по специализации и месту работы
-            return (
-                (fullName.includes(query) || profession.includes(query) || city.includes(query) || workplaceName.includes(query)) &&
-                isRegisteredMatch
-            );
-        });
+        const isRegisteredMatch = isRegistered ? specialist.registered : true;
 
-        if (filteredSpecialists.length === 0) {
-            document.getElementById('no-specialists-message').style.display = 'block';
-        } else {
-            document.getElementById('no-specialists-message').style.display = 'none';
-        }
+        return (
+            (fullName.includes(query) || profession.includes(query) || city.includes(query) || workplaceName.includes(query)) &&
+            isRegisteredMatch
+        );
+    });
 
-        filteredSpecialists.forEach(specialist => {
-            const specialistElement = document.createElement('a');
-            specialistElement.href = `/specialists/profile/${specialist.id}`;
-            console.log('Fields of activity:', specialist.fields_of_activity);
+    // Обновляем текст с количеством найденных специалистов
+    const specialistsCountElement = document.getElementById('specialists-count');
+    specialistsCountElement.textContent = `Найденных специалистов: ${filteredSpecialists.length}`;
 
-            // Преобразуем массив символов в строку и затем в массив строк
-            const fieldsOfActivityString = specialist.fields_of_activity.join('');
-            const fieldsOfActivityArray = fieldsOfActivityString.split(', ');
-            
-            specialistElement.className = 'specialists-block';
-            specialistElement.innerHTML = `
-                <div class="specialists-img-block">
-                    ${specialist.registered ? '<div class="specialists-registered">Р</div>' : ''}
-                    <img src="${specialist.photo}" alt="photo" class="specialists-img">
-                </div>
-                <div class="specialists-info">
-                    <span class="specialists-info-label">ФИО: </span>${specialist.first_name} ${specialist.patronymic} ${specialist.last_name}
-                </div>
-                <div class="specialists-info">
-                    <span class="specialists-info-label">Город: </span>${specialist.city}
-                </div>
-                <div class="specialists-info">
-
-                    <span class="specialists-info-label">Сферы деятельности в ранней помощи: </span>${fieldsOfActivityArray.join(', ')}
-                </div>
-                <div class="specialists-info">
-                    <span class="specialists-info-label">Специализация: </span>${specialist.profession}
-                </div>
-            `;
-            specialistsContainer.appendChild(specialistElement);
-        });
+    if (filteredSpecialists.length === 0) {
+        document.getElementById('no-specialists-message').style.display = 'block';
+    } else {
+        document.getElementById('no-specialists-message').style.display = 'none';
     }
+
+    filteredSpecialists.forEach(specialist => {
+        const specialistElement = document.createElement('a');
+        specialistElement.href = `/specialists/profile/${specialist.id}`;
+        console.log('Fields of activity:', specialist.fields_of_activity);
+
+        const fieldsOfActivityString = specialist.fields_of_activity.join('');
+        const fieldsOfActivityArray = fieldsOfActivityString.split(', ');
+
+        specialistElement.className = 'specialists-block';
+        specialistElement.innerHTML = `
+            <div class="specialists-img-block">
+                ${specialist.registered ? '<div class="specialists-registered">Р</div>' : ''}
+                <img src="${specialist.photo}" alt="photo" class="specialists-img">
+            </div>
+            <div class="specialists-info">
+                <span class="specialists-info-label">ФИО: </span>${specialist.first_name} ${specialist.patronymic} ${specialist.last_name}
+            </div>
+            <div class="specialists-info">
+                <span class="specialists-info-label">Город: </span>${specialist.city}
+            </div>
+            <div class="specialists-info">
+                <span class="specialists-info-label">Сферы деятельности в ранней помощи: </span>${fieldsOfActivityArray.join(', ')}
+            </div>
+            <div class="specialists-info">
+                <span class="specialists-info-label">Специализация: </span>${specialist.profession}
+            </div>
+        `;
+        specialistsContainer.appendChild(specialistElement);
+    });
+}
+
+
 
     searchInput.addEventListener('input', filterSpecialists);
     registeredFilter.addEventListener('change', filterSpecialists);
@@ -159,6 +229,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <option value="">Все сферы деятельности</option>
             </select>
         </div>
+    </div>
+    <div id="specialists-count" class="specialists-count">
+        Найденных специалистов: 0
     </div>
 </div>
 
