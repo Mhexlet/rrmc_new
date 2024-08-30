@@ -36,10 +36,12 @@ class Page(models.Model):
     section = models.ForeignKey(Section, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Раздел меню (оставьте незаполненным, если страница не является подразделом)', related_name='pages')
     content = models.TextField(verbose_name='Содержимое')
     approved = models.BooleanField(default=False, verbose_name='Публичный доступ')
+    order = models.PositiveSmallIntegerField(null=True, verbose_name='Порядок')
 
     class Meta:
         verbose_name = 'Страница'
         verbose_name_plural = 'Страницы'
+        ordering = ['order']  # Сортировка по полю order
 
     def __str__(self):
         return self.title
