@@ -104,7 +104,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="register-selected">Сферы деятельности в ранней помощи</div>
             <div class="register-options-block"></div>
         </div>
-        <input type="hidden" name="field_of_activity" id="id_field_of_activity" value="">
+        <!-- <input type="hidden" name="field_of_activity" id="id_field_of_activity" value=""> -->
+        <input type="hidden" name="field_of_activity_hidden" id="id_field_of_activity_hidden" value="">
+
+
         {% for field in second_block %}
             {{ field }}
             {% if field.name == 'photo' %}
