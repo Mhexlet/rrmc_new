@@ -60,6 +60,7 @@
                             <a href="{% url 'custom:constructor' url=page.url %}" class="menu-page{% if page.url == request.resolver_match.kwargs.url %} active{% endif %}">{{ page.title }}</a>
                         {% endif %}
                     {% endfor %}
+                    <a href="{% url 'anketa' %}" class="menu-page{% if 'anketa' in request.resolver_match.url_name %} active{% endif %}">Анкета</a>
                     <a href="{% url 'news' %}" class="menu-page{% if 'news' in request.resolver_match.url_name %} active{% endif %}">Новости</a>
                     <a href="{% url 'geography' %}" class="menu-page{% if 'geography' in request.resolver_match.url_name %} active{% endif %}">География ранней помощи </a>
                     <a href="{% url 'consultation' %}" class="menu-page{% if 'consultation' in request.resolver_match.url_name %} active{% endif %}">Интерактивная консультация</a>

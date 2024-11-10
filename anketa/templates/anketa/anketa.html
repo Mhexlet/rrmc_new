@@ -1,0 +1,237 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block js %}
+<script src='https://www.google.com/recaptcha/api.js'></script>
+<script src="{% static 'js/anketa.js' %}"></script>
+
+{% endblock %}
+{% block content %}
+<h3 class="page-title">Анкета на помощь</h3>
+<div class="separator"></div>
+<div class="anketa-background">
+
+        <!-- Сообщение благодарности -->
+<div id="thank-you-message" class="thank-you-message" style="display: none;">
+    Спасибо за обращение! В ближайшее время специалист Регионального ресурсно-методического центра ранней помощи детям и их семьям в Иркутской области 
+    <a href="https://www.orc-rrmc.ru/">https://www.orc-rrmc.ru/</a> свяжется с Вами для решения Вашего вопроса.
+</div>
+
+    
+    <div id="popup-message" class="popup-message" style="display: none;">Данные сохраняются динамически</div>
+    
+<div class="anketa-container">
+
+
+    <div class="welcome-message">
+        <h2>Добро пожаловать!</h2>
+        <p>Ваша анкета будет рассмотрена в течение <span class="review-time">5</span> дней.</p>
+        <p>Данные сохраняются динамически. Вы сможете начать с того места, где закончили.</p>
+        <button type="button" class="btn-clear clear-form-btn">Очистить анкету</button>
+
+    </div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+
+
+    <!-- ФИО заявителя -->
+    <h2 class="anketa-h2">Информация о заявителе</h2>
+    <input type="text" class="anketa-input anketa-last-name" name="last_name" placeholder="Фамилия">
+    <input type="text" class="anketa-input anketa-first-name" name="first_name" placeholder="Имя">
+    <input type="text" class="anketa-input anketa-middle-name" name="middle_name" placeholder="Отчество (при наличии)">
+
+    <!-- Степень родства -->
+    <div class="anketa-relation-container">
+        <h2 class="anketa-h2">Степень родства</h2>
+
+        <div class="anketa-relation">
+            <label class="anketa-radio">
+                <input type="radio" name="relation" value="parent">
+                <span>Родитель</span>
+            </label>
+            <label class="anketa-radio">
+                <input type="radio" name="relation" value="representative">
+                <span>Законный представитель</span>
+            </label>
+            <label class="anketa-radio">
+                <input type="radio" name="relation" value="other">
+                <span>Иное</span>
+            </label>
+        </div>
+        
+        <input type="text" class="anketa-input anketa-relation-other" name="relation_other" placeholder="Иное (уточните)" style="display: none;">
+    </div>
+
+    <!-- Телефоны -->
+    <h2 class="anketa-h2">Контактные данные</h2>
+    <input type="text" class="anketa-input anketa-phone" name="main_phone" placeholder="Основной номер телефона">
+    <input type="text" class="anketa-input anketa-phone-additional" name="additional_phone" placeholder="Дополнительный номер телефона (при наличии)">
+
+    <!-- Электронные адреса -->
+    <input type="email" class="anketa-input anketa-email" name="main_email" placeholder="Основной электронный адрес">
+    <input type="email" class="anketa-input anketa-email-additional" name="additional_email" placeholder="Дополнительный электронный адрес (при наличии)">
+
+    <!-- Предпочтительный способ связи -->
+    <div class="anketa-contact-container">
+        <h2 class="anketa-h2">Предпочтительный способ связи</h2>
+    
+        <div class="anketa-contact">
+            <label class="anketa-checkbox">
+                <input type="checkbox" name="preferred_contact" value="telegram">
+                <span>Telegram</span>
+            </label>
+            <label class="anketa-checkbox">
+                <input type="checkbox" name="preferred_contact" value="whatsapp">
+                <span>WhatsApp</span>
+            </label>
+            <label class="anketa-checkbox">
+                <input type="checkbox" name="preferred_contact" value="call">
+                <span>Звонок</span>
+            </label>
+        </div>
+    </div>
+    
+
+    <!-- Удобное время для связи -->
+    <div class="anketa-time-container">
+        <h2 class="anketa-h2">Удобное время для связи</h2>
+    
+        <div class="anketa-time">
+            <label class="anketa-radio">
+                <input type="radio" name="preferred_time" value="morning">
+                <span>с 10:00 до 13:00</span>
+            </label>
+            <label class="anketa-radio">
+                <input type="radio" name="preferred_time" value="afternoon">
+                <span>с 14:00 до 17:00</span>
+            </label>
+        </div>
+    </div>
+    
+
+    <!-- ФИО ребенка -->
+    <div class="anketa-child-header">
+        <h2 class="anketa-h2">Информация о ребёнке</h2>
+        <button type="button" class="copy-last-name-btn">Нажмите если совпадает с фамилией родителя</button>
+    </div>
+    <!-- <button type="button" class="copy-last-name-btn">Нажмите если совпадает с фамилией родителя</button> -->
+
+    
+
+    <input type="text" class="anketa-input anketa-child-last-name" name="child_last_name" placeholder="Фамилия ребенка">
+    <input type="text" class="anketa-input anketa-child-first-name" name="child_first_name" placeholder="Имя ребенка">
+    <input type="text" class="anketa-input anketa-child-middle-name" name="child_middle_name" placeholder="Отчество ребенка (при наличии)">
+
+    <!-- Дата рождения ребенка -->
+    <input type="date" class="anketa-input anketa-birth-date" name="child_birth_date" aria-label="Дата рождения ребёнка">
+
+
+    <!-- Адрес проживания ребенка -->
+    <h2 class="anketa-h2">Адрес проживания ребёнка</h2>
+    <!-- <input type="text" class="anketa-input anketa-city" name="city" placeholder="Город"> -->
+    <select class="anketa-input anketa-city" name="city" id="city">
+        <option value="">Выберите город</option>
+        {% for city in cities %}
+            <option value="{{ city.id }}">{{ city.name }}</option>
+        {% endfor %}
+    </select>
+    <input type="text" class="anketa-input anketa-street" name="street" placeholder="Улица/микрорайон">
+    <input type="text" class="anketa-input anketa-house" name="house" placeholder="Дом">
+    <input type="text" class="anketa-input anketa-apartment" name="apartment" placeholder="Квартира">
+
+<!-- Причины обращения -->
+<div class="anketa-reasons-container">
+    <h2 class="anketa-h2">Причины обращения</h2>
+
+    <div class="anketa-reasons">
+        <label class="anketa-checkbox">
+            <input type="checkbox" name="reasons" value="disability">
+            <span>Ребенок-инвалид</span>
+        </label>
+        <label class="anketa-checkbox">
+            <input type="checkbox" name="reasons" value="health_group">
+            <span>IV или V группа здоровья</span>
+        </label>
+        <label class="anketa-checkbox">
+            <input type="checkbox" name="reasons" value="developmental_issues">
+            <span>Особенности физического/психического развития</span>
+        </label>
+        <label class="anketa-checkbox">
+            <input type="checkbox" name="reasons" value="parent_concern">
+            <span>Обеспокоенность родителей</span>
+        </label>
+        <label class="anketa-checkbox">
+            <input type="checkbox" name="reasons" value="other" class="anketa-checkbox-other">
+            <span>Иное</span>
+        </label>
+    </div>
+
+    <input type="text" class="anketa-input anketa-reason-other" name="reason_other" placeholder="Иное (уточните)" style="display: none;">
+</div>
+
+
+<!-- Документ направления -->
+<h2 class="anketa-h2">Документ направления</h2>
+<div class="anketa-file-container">
+    <input type="file" class="anketa-input anketa-document" name="referral_document" id="fileUpload">
+    <small class="file-info">Допустимые форматы: PDF, JPG, PNG, DOCX. Максимальный размер: 10 МБ. Необязательное поле</small>
+    <div class="progress-container" style="display: none;">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="upload-status" id="uploadStatus" style="display: none;">Файл загружен успешно</div>
+</div>
+
+<!-- Источник информации о службе -->
+<div class="anketa-sources-container">
+    <h2 class="anketa-h2">Источник информации о службе</h2>
+
+    <div class="anketa-sources">
+        <label class="anketa-checkbox">
+            <input type="checkbox" name="sources" value="healthcare">
+            <span>От специалиста учреждения здравоохранения</span>
+        </label>
+        <label class="anketa-checkbox">
+            <input type="checkbox" name="sources" value="education">
+            <span>От специалиста учреждения образования</span>
+        </label>
+        <label class="anketa-checkbox">
+            <input type="checkbox" name="sources" value="social_protection">
+            <span>От специалиста учреждения социальной защиты</span>
+        </label>
+        <label class="anketa-checkbox">
+            <input type="checkbox" name="sources" value="media">
+            <span>Из СМИ</span>
+        </label>
+        <label class="anketa-checkbox">
+            <input type="checkbox" name="sources" value="other" class="anketa-checkbox-other-info">
+            <span>Иное</span>
+        </label>
+    </div>
+
+    <input type="text" class="anketa-input anketa-source-other-info" name="source_other" placeholder="Иное (уточните)" style="display: none;">
+</div>
+
+
+<!-- Согласие на обработку данных -->
+<h2 class="anketa-h2">Согласие и отправка анкеты</h2>
+<div class="anketa-consent-container">
+    <label class="anketa-checkbox">
+        <input type="checkbox" name="consent" class="anketa-consent-checkbox">
+        <span>Даю согласие на обработку персональных данных</span>
+    </label>
+    <a href="/privacy-policy" class="privacy-link" target="_blank">Правила обработки персональных данных</a>
+</div>
+
+
+<!-- Кнопка отправки -->
+<div class="anketa-submit-container">
+    <div id="validation-errors" class="validation-errors" style="display: none;"></div>
+    <button type="submit" class="btn btn-primary anketa-submit-button" disabled>Отправить анкету</button>
+</div>
+
+</form>
+</div>
+</div>
+
+{% endblock %}

@@ -101,6 +101,8 @@ class Place(models.Model):
     name = models.CharField(max_length=64, verbose_name='Название места')
     text = models.TextField(null=True, blank=True, verbose_name='Описание')
     order = models.PositiveIntegerField(blank=True, null=True, verbose_name='Порядок вывода')
+    is_hidden = models.BooleanField(default=False, verbose_name='Скрыть в географии ранней помощи')
+
 
     class Meta:
         verbose_name = 'Город из географии ранней помощи'

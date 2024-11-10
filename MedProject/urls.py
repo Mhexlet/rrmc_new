@@ -1,19 +1,4 @@
-"""
-URL configuration for MedProject project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
@@ -25,9 +10,21 @@ from django.views.i18n import JavaScriptCatalog
 from main.decorators import check_recaptcha
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, \
     PasswordResetCompleteView
+# from main.custom_admin import news_admin_site
+from main.custom_admin import empty_admin_site
+from anketa.views import anketa_view
+
+
+
+
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('news-admin/', empty_admin_site.urls),  # Путь для новой админки
+
+
     path('admin_tools/', include('admin_tools.urls')),
 
     path('', main.index, name='index'),
@@ -38,6 +35,7 @@ urlpatterns = [
     path('faq/<int:page>/', main.FaqView.as_view(), name='faq_page'),
     path('create_question/', check_recaptcha(main.create_question), name='create_question'),
     path('consultation/', main.consultation, name='consultation'),
+    path('anketa/', anketa_view, name='anketa'),
     path('create_application/', check_recaptcha(main.create_application), name='create_application'),
     path('geography/', main.geography, name='geography'),
     path('news/', main.NewsList.as_view(), name='news'),

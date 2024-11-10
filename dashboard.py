@@ -20,6 +20,9 @@ from admin_tools.dashboard import modules, Dashboard, AppIndexDashboard
 from authentication.models import UserApprovalApplication, UserEditApplication
 from specialists.models import ArticleApprovalApplication
 from main.models import QuestionAnswer, Application, Review
+from anketa.models import CustomCRMUser
+
+
 
 
 class CustomIndexDashboard(Dashboard):
@@ -27,102 +30,120 @@ class CustomIndexDashboard(Dashboard):
     Custom index dashboard for MedProject.
     """
     def init_with_context(self, context):
+        user = context['request'].user
 
-        uaa_length = len(UserApprovalApplication.objects.filter(treated=False))
-        uea_length = len(UserEditApplication.objects.filter(treated=False))
-        aaa_length = len(ArticleApprovalApplication.objects.filter(treated=False))
-        qa_length = len(QuestionAnswer.objects.filter(treated=False))
-        review_length = len(Review.objects.filter(treated=False))
-        application_length = len(Application.objects.filter(treated=False))
+        # Проверяем, не является ли пользователь CustomCRMUser
+        if not hasattr(user, 'customcrmuser'):
+            # Получаем количество необработанных заявок
+            uaa_length = UserApprovalApplication.objects.filter(treated=False).count()
+            uea_length = UserEditApplication.objects.filter(treated=False).count()
+            aaa_length = ArticleApprovalApplication.objects.filter(treated=False).count()
+            qa_length = QuestionAnswer.objects.filter(treated=False).count()
+            review_length = Review.objects.filter(treated=False).count()
+            application_length = Application.objects.filter(treated=False).count()
 
-        self.children.append(modules.LinkList(
-            _('Уведомления'),
-            draggable=False,
-            deletable=False,
-            collapsible=False,
-            children=[
-                {
-                    'title': f'Заявки на одобрение профиля: {uaa_length}',
-                    'url': '/admin/authentication/userapprovalapplication/',
-                    'attrs': {
-                        'style': 'color: red;' if uaa_length else ''
-                    }
-                },
-                {
-                    'title': f'Заявки на изменение профиля: {uea_length}',
-                    'url': '/admin/authentication/usereditapplication/',
-                    'attrs': {
-                        'style': 'color: red;' if uea_length else ''
-                    }
-                },
-                {
-                    'title': f'Заявки на одобрение статьи: {aaa_length}',
-                    'url': '/admin/specialists/articleapprovalapplication/',
-                    'attrs': {
-                        'style': 'color: red;' if aaa_length else ''
-                    }
-                },
-                {
-                    'title': f'Вопросы: {qa_length}',
-                    'url': '/admin/main/questionanswer/',
-                    'attrs': {
-                        'style': 'color: red;' if qa_length else ''
-                    }
-                },
-                {
-                    'title': f'Отзывы: {review_length}',
-                    'url': '/admin/main/review/',
-                    'attrs': {
-                        'style': 'color: red;' if review_length else ''
-                    }
-                },
-                {
-                    'title': f'Заявки на консультацию: {application_length}',
-                    'url': '/admin/main/application/',
-                    'attrs': {
-                        'style': 'color: red;' if application_length else ''
-                    }
-                },
-            ]
-        ))
+            # Добавляем модуль уведомлений
+            self.children.append(modules.LinkList(
+                _('Уведомления'),
+                draggable=False,
+                deletable=False,
+                collapsible=False,
+                children=[
+                    {
+                        'title': f'Заявки на одобрение профиля: {uaa_length}',
+                        'url': '/admin/authentication/userapprovalapplication/',
+                        'attrs': {
+                            'style': 'color: red;' if uaa_length else ''
+                        }
+                    },
+                    {
+                        'title': f'Заявки на изменение профиля: {uea_length}',
+                        'url': '/admin/authentication/usereditapplication/',
+                        'attrs': {
+                            'style': 'color: red;' if uea_length else ''
+                        }
+                    },
+                    {
+                        'title': f'Заявки на одобрение статьи: {aaa_length}',
+                        'url': '/admin/specialists/articleapprovalapplication/',
+                        'attrs': {
+                            'style': 'color: red;' if aaa_length else ''
+                        }
+                    },
+                    {
+                        'title': f'Вопросы: {qa_length}',
+                        'url': '/admin/main/questionanswer/',
+                        'attrs': {
+                            'style': 'color: red;' if qa_length else ''
+                        }
+                    },
+                    {
+                        'title': f'Отзывы: {review_length}',
+                        'url': '/admin/main/review/',
+                        'attrs': {
+                            'style': 'color: red;' if review_length else ''
+                        }
+                    },
+                    {
+                        'title': f'Заявки на консультацию: {application_length}',
+                        'url': '/admin/main/application/',
+                        'attrs': {
+                            'style': 'color: red;' if application_length else ''
+                        }
+                    },
+                ]
+            ))
 
-        self.children.append(modules.LinkList(
-            _('Альбомы и наборы файлов'),
-            layout='inline',
-            draggable=False,
-            deletable=False,
-            collapsible=False,
-            children=[
-                {'title': 'Добавить альбом', 'url': reverse('custom:add_album_page'), 'attrs': {'target': '_blank'}},
-                {'title': 'Добавить набор файлов', 'url': reverse('custom:add_fileset_page'), 'attrs': {'target': '_blank'}},
-            ]
-        ))
+            # Добавляем модуль альбомов и наборов файлов
+            self.children.append(modules.LinkList(
+                _('Альбомы и наборы файлов'),
+                layout='inline',
+                draggable=False,
+                deletable=False,
+                collapsible=False,
+                children=[
+                    {'title': 'Добавить альбом', 'url': reverse('custom:add_album_page'), 'attrs': {'target': '_blank'}},
+                    {'title': 'Добавить набор файлов', 'url': reverse('custom:add_fileset_page'), 'attrs': {'target': '_blank'}},
+                ]
+            ))
 
-        self.children.append(modules.AppList(
-            _('Applications'),
-            exclude=('django.contrib.*',),
-        ))
+            # Добавляем список приложений, исключая встроенные Django
+            self.children.append(modules.AppList(
+                _('Applications'),
+                exclude=('django.contrib.*',),
+            ))
 
-        self.children.append(modules.AppList(
-            _('Administration'),
-            models=('django.contrib.*',),
-        ))
+            # Добавляем модуль администратора с встроенными приложениями Django
+            self.children.append(modules.AppList(
+                _('Administration'),
+                models=('django.contrib.*',),
+            ))
 
-        self.children.append(modules.RecentActions(_('Recent Actions'), 5))
+            # Добавляем модуль последних действий
+            self.children.append(modules.RecentActions(_('Recent Actions'), 5))
+        else:
 
+        # Дублируем вывод для пльзователя CRM
+            # Добавляем список приложений, исключая встроенные Django
+            self.children.append(modules.AppList(
+                _('Applications'),
+                exclude=('django.contrib.*',),
+            ))
+            # Добавляем модуль последних действий
+            self.children.append(modules.RecentActions(_('Recent Actions'), 5))
 
 class CustomAppIndexDashboard(AppIndexDashboard):
     """
     Custom app index dashboard for MedProject.
     """
 
-    # we disable title because its redundant with the model list module
+    # мы отключаем заголовок, так как он избыточен с модулем списка моделей
     title = ''
 
     def __init__(self, *args, **kwargs):
-        AppIndexDashboard.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-        # append a model list module and a recent actions module
+        # добавляем модуль списка моделей и модуль последних действий
         self.children += [
             modules.ModelList(self.app_title, self.models),
             modules.RecentActions(
@@ -134,6 +155,124 @@ class CustomAppIndexDashboard(AppIndexDashboard):
 
     def init_with_context(self, context):
         """
-        Use this method if you need to access the request context.
+        Используйте этот метод, если вам нужно получить доступ к контексту запроса.
         """
         return super(CustomAppIndexDashboard, self).init_with_context(context)
+
+
+# class CustomIndexDashboard(Dashboard):
+#     """
+#     Custom index dashboard for MedProject.
+#     """
+#     def init_with_context(self, context):
+
+
+#         uaa_length = len(UserApprovalApplication.objects.filter(treated=False))
+#         uea_length = len(UserEditApplication.objects.filter(treated=False))
+#         aaa_length = len(ArticleApprovalApplication.objects.filter(treated=False))
+#         qa_length = len(QuestionAnswer.objects.filter(treated=False))
+#         review_length = len(Review.objects.filter(treated=False))
+#         application_length = len(Application.objects.filter(treated=False))
+
+#         self.children.append(modules.LinkList(
+#             _('Уведомления'),
+#             draggable=False,
+#             deletable=False,
+#             collapsible=False,
+#             children=[
+#                 {
+#                     'title': f'Заявки на одобрение профиля: {uaa_length}',
+#                     'url': '/admin/authentication/userapprovalapplication/',
+#                     'attrs': {
+#                         'style': 'color: red;' if uaa_length else ''
+#                     }
+#                 },
+#                 {
+#                     'title': f'Заявки на изменение профиля: {uea_length}',
+#                     'url': '/admin/authentication/usereditapplication/',
+#                     'attrs': {
+#                         'style': 'color: red;' if uea_length else ''
+#                     }
+#                 },
+#                 {
+#                     'title': f'Заявки на одобрение статьи: {aaa_length}',
+#                     'url': '/admin/specialists/articleapprovalapplication/',
+#                     'attrs': {
+#                         'style': 'color: red;' if aaa_length else ''
+#                     }
+#                 },
+#                 {
+#                     'title': f'Вопросы: {qa_length}',
+#                     'url': '/admin/main/questionanswer/',
+#                     'attrs': {
+#                         'style': 'color: red;' if qa_length else ''
+#                     }
+#                 },
+#                 {
+#                     'title': f'Отзывы: {review_length}',
+#                     'url': '/admin/main/review/',
+#                     'attrs': {
+#                         'style': 'color: red;' if review_length else ''
+#                     }
+#                 },
+#                 {
+#                     'title': f'Заявки на консультацию: {application_length}',
+#                     'url': '/admin/main/application/',
+#                     'attrs': {
+#                         'style': 'color: red;' if application_length else ''
+#                     }
+#                 },
+#             ]
+#         ))
+
+#         self.children.append(modules.LinkList(
+#             _('Альбомы и наборы файлов'),
+#             layout='inline',
+#             draggable=False,
+#             deletable=False,
+#             collapsible=False,
+#             children=[
+#                 {'title': 'Добавить альбом', 'url': reverse('custom:add_album_page'), 'attrs': {'target': '_blank'}},
+#                 {'title': 'Добавить набор файлов', 'url': reverse('custom:add_fileset_page'), 'attrs': {'target': '_blank'}},
+#             ]
+#         ))
+
+#         self.children.append(modules.AppList(
+#             _('Applications'),
+#             exclude=('django.contrib.*',),
+#         ))
+
+#         self.children.append(modules.AppList(
+#             _('Administration'),
+#             models=('django.contrib.*',),
+#         ))
+
+#         self.children.append(modules.RecentActions(_('Recent Actions'), 5))
+
+
+# class CustomAppIndexDashboard(AppIndexDashboard):
+#     """
+#     Custom app index dashboard for MedProject.
+#     """
+
+#     # we disable title because its redundant with the model list module
+#     title = ''
+
+#     def __init__(self, *args, **kwargs):
+#         AppIndexDashboard.__init__(self, *args, **kwargs)
+
+#         # append a model list module and a recent actions module
+#         self.children += [
+#             modules.ModelList(self.app_title, self.models),
+#             modules.RecentActions(
+#                 _('Recent Actions'),
+#                 include_list=self.get_app_content_types(),
+#                 limit=5
+#             )
+#         ]
+
+#     def init_with_context(self, context):
+#         """
+#         Use this method if you need to access the request context.
+#         """
+#         return super(CustomAppIndexDashboard, self).init_with_context(context)

@@ -165,6 +165,8 @@ def consultation(request):
     return render(request, 'main/consultation.html', context)
 
 
+
+
 def create_application(request):
 
     first_name = request.POST.get('name')
@@ -219,7 +221,8 @@ def geography(request):
                                      SiteContent.objects.get(name='phone').content,
                                      SiteContent.objects.get(name='phone').content.translate(
                                          str.maketrans({' ': '', '-': '', '(': '', ')': ''}))],
-        'places': Place.objects.all().order_by('order')
+        # 'places': Place.objects.all().order_by('order')
+        'places': Place.objects.filter(is_hidden=False).order_by('order')
     }
 
     return render(request, 'main/geography.html', context)

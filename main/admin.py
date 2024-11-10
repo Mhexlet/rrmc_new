@@ -11,6 +11,15 @@ from .models import QuestionAnswer, Review, MainSliderImage, Application, Place,
 from django_summernote.admin import SummernoteModelAdmin
 
 
+
+
+
+
+
+
+
+
+
 @admin.register(QuestionAnswer)
 class QuestionAnswerAdmin(admin.ModelAdmin):
     list_display = ['name', 'short_question', 'short_answer', 'treated', 'approved']
@@ -83,8 +92,11 @@ class ApplicationAdmin(admin.ModelAdmin):
 
 @admin.register(Place)
 class PlaceAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'order', 'src']
+    list_display = ['id', 'name', 'order', 'src', 'is_hidden']
     list_display_links = ('id', 'name',)
+    list_editable = ('is_hidden',)
+    list_filter = ('is_hidden',)
+    search_fields = ('name',)
 
     def save_model(self, request, obj, form, change):
         if obj.src.startswith('<'):

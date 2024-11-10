@@ -78,7 +78,8 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=64, verbose_name='Фамилия')
     # field_of_activity = models.ForeignKey(FieldOfActivity, on_delete=models.SET_NULL, null=True, verbose_name='Сфера деятельности')
     profession = models.CharField(max_length=64, verbose_name='Специализация')
-    photo = models.ImageField(upload_to=user_photo_upload, verbose_name='Фото')
+    # photo = models.ImageField(upload_to=user_photo_upload, verbose_name='Фото')
+    photo = models.ImageField(upload_to=user_photo_upload, verbose_name='Фото', blank=True, null=True)
     city = models.CharField(max_length=128, verbose_name='Город')
     birthdate = models.DateField(null=True, verbose_name='Дата рождения')
     workplace_address = models.CharField(max_length=128, verbose_name='Адрес места работы')
@@ -209,11 +210,15 @@ class UserEditApplication(models.Model):
         else:
             return self.new_value
 
-
 @receiver(models.signals.pre_save, sender=User)
 def compress_user_photo(sender, instance, raw, using, update_fields, *args, **kwargs):
-    if not instance.pk:
+    # Проверяем, есть ли файл в поле photo, прежде чем выполнять сжатие
+    if not instance.pk and instance.photo:  # Если объект новый и фото присутствует
         compress_img(instance, 'photo', 'profile_photos')
+# @receiver(models.signals.pre_save, sender=User)
+# def compress_user_photo(sender, instance, raw, using, update_fields, *args, **kwargs):
+#     if not instance.pk:
+#         compress_img(instance, 'photo', 'profile_photos')
 
 
 @receiver(models.signals.pre_save, sender=UserApprovalApplication)
@@ -264,10 +269,21 @@ def approve_edit(sender, instance, raw, using, update_fields, *args, **kwargs):
 
 @receiver(models.signals.pre_delete, sender=User)
 def delete_user_photo(sender, instance, using, origin, **kwargs):
-    try:
-        os.remove(os.path.join(BASE_DIR, 'media', instance.photo.name))
-    except (FileNotFoundError, UnicodeEncodeError):
-        pass
+    # Проверяем, существует ли поле 'photo' и имеет ли оно значение
+    if hasattr(instance, 'photo') and instance.photo:
+        photo_path = os.path.join(settings.MEDIA_ROOT, instance.photo.name)
+        try:
+            # Проверяем, существует ли файл
+            if os.path.isfile(photo_path):
+                os.remove(photo_path)
+        except (FileNotFoundError, PermissionError, UnicodeEncodeError) as e:
+            print(f"Ошибка при удалении фото пользователя: {e}")
+# @receiver(models.signals.pre_delete, sender=User)
+# def delete_user_photo(sender, instance, using, origin, **kwargs):
+#     try:
+#         os.remove(os.path.join(BASE_DIR, 'media', instance.photo.name))
+#     except (FileNotFoundError, UnicodeEncodeError):
+#         pass
 
 
 @receiver(models.signals.pre_save, sender=Attachment)
