@@ -1,5 +1,43 @@
 from django import forms
 from .models import Anketa
+from django.utils import timezone
+
+
+
+
+
+class StatisticsForm(forms.Form):
+    start_date = forms.DateField(
+        label="Дата начала",
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        initial=timezone.now().date() - timezone.timedelta(days=7)
+    )
+    end_date = forms.DateField(
+        label="Дата окончания",
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        initial=timezone.now().date()
+    )
+    show_top_10 = forms.BooleanField(
+        label="Показать только топ-10 учреждений",
+        required=False,
+        initial=True
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class AnketaForm(forms.ModelForm):
     class Meta:

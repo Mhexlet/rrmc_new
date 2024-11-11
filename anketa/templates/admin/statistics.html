@@ -1,0 +1,55 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+  <h1>Статистика по {{ title }}</h1>
+
+  <form method="get">
+    <label for="start_date">Дата начала:</label>
+    <input type="date" name="start_date" value="{{ start_date }}">
+    <label for="end_date">Дата окончания:</label>
+    <input type="date" name="end_date" value="{{ end_date }}">
+    <button type="submit">Показать</button>
+    <input type="checkbox" name="show_top_10" id="show_top_10" {% if show_top_10 %}checked{% endif %}>
+    <label for="show_top_10">Показать только топ-10</label>
+    <button type="submit" name="export" value="excel">Экспорт в Excel</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>{{ title }}</th>
+        <th>Количество заявок</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in statistics %}
+        <tr>
+          {% if title == "Учреждение" %}
+            <td>{{ item.institution__name|default:"Не указано" }}</td>
+          {% elif title == "Город" %}
+            <td>{{ item.city__name|default:"Не указано" }}</td>
+          {% elif title == "Степень родства" %}
+            <td>{{ item.relation_display|default:"Не указано" }}</td>
+          {% endif %}
+          <td>{{ item.count }}</td>
+        </tr>
+      {% endfor %}
+      {% if others_count > 0 %}
+        <tr>
+          <td>Прочие</td>
+          <td>{{ others_count }}</td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td><strong>Всего</strong></td>
+        <td><strong>{{ total_count }}</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  
+
+  {% if chart_base64 %}
+    <img src="{{ chart_base64 }}" alt="Диаграмма">
+  {% endif %}
+{% endblock %}

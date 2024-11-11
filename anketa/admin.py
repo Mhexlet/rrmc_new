@@ -1,10 +1,71 @@
 from django.contrib import admin
 from .models import Anketa
+from main.models import Institution
 from django.utils.html import format_html
 from django.utils import timezone
+from django.db.models import Count, Q
 from .models import CustomCRMUser
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from .forms import StatisticsForm
+from django.shortcuts import render
+
+
+
+
+
+# class StatisticsAdminView(admin.ModelAdmin):
+#     change_list_template = "admin/statistics.html"
+#     title = "Статистика по учреждениям"
+
+#     def get_urls(self):
+#         from django.urls import path
+#         urls = super().get_urls()
+#         custom_urls = [
+#             path('statistics/', self.admin_site.admin_view(self.statistics_view), name='anketa_statistics'),
+#         ]
+#         return custom_urls + urls
+
+#     def statistics_view(self, request):
+#         form = StatisticsForm(request.GET or None)
+
+#         if form.is_valid():
+#             start_date = form.cleaned_data['start_date']
+#             end_date = form.cleaned_data['end_date']
+#             show_top_10 = form.cleaned_data['show_top_10']
+
+#             # Фильтрация по дате обработки
+#             queryset = Anketa.objects.filter(
+#                 date_processed__range=(start_date, end_date)
+#             ).values('institution__name').annotate(count=Count('id')).order_by('-count')
+
+#             # Суммарные данные
+#             total_count = queryset.aggregate(total=Count('id'))['total']
+#             data = list(queryset)
+
+#             # Ограничиваем до топ-10 и объединяем остальные в "Другие"
+#             if show_top_10 and len(data) > 10:
+#                 top_10 = data[:10]
+#                 others_count = sum(item['count'] for item in data[10:])
+#                 top_10.append({'institution__name': 'Другие', 'count': others_count})
+#                 data = top_10
+
+#             context = {
+#                 'title': self.title,
+#                 'form': form,
+#                 'data': data,
+#                 'total_count': total_count,
+#             }
+
+#             return render(request, 'admin/statistics.html', context)
+
+#         # Показ формы по умолчанию
+#         context = {
+#             'title': self.title,
+#             'form': form,
+#         }
+#         return render(request, 'admin/statistics.html', context)
+
 
 
 class CustomUserCreationForm(UserCreationForm):

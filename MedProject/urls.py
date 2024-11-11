@@ -22,7 +22,8 @@ from anketa.views import anketa_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('news-admin/', empty_admin_site.urls),  # Путь для новой админки
+    # path('news-admin/', empty_admin_site.urls),  # Путь для новой админки
+    path('anketa/', include('anketa.urls')),
 
 
     path('admin_tools/', include('admin_tools.urls')),

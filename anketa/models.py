@@ -85,7 +85,7 @@ class Anketa(models.Model):
     )
 
     institution = models.ForeignKey(
-        'main.Institution',  # Указываем приложение 'main'
+        'main.Institution',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
