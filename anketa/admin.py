@@ -9,6 +9,10 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .forms import StatisticsForm
 from django.shortcuts import render
+from datetime import timedelta
+# from rangefilter.filters import DateRangeFilter
+from django.contrib.admin import DateFieldListFilter
+
 
 
 
@@ -162,7 +166,7 @@ class AnketaAdmin(admin.ModelAdmin):
             'fields': ('status', 'rating', 'date_taken_in_work', 'date_processed', 'date_feedback_received', 'created_at')
         }),
     )
-    list_filter = ['status', 'rating', 'created_at', 'is_hidden', 'relation']
+    list_filter = ['status', 'rating', ('created_at', DateFieldListFilter), 'is_hidden', 'relation']
     search_fields = ['last_name', 'first_name', 'child_last_name', 'main_phone']
     # Добавляем возможность сортировки
     ordering = ['-created_at', '-date_taken_in_work', '-date_processed', '-rating']
@@ -248,7 +252,8 @@ class AnketaAdmin(admin.ModelAdmin):
         if anketa and anketa.status == 'new':
             # Изменяем статус на "В работе" и устанавливаем текущую дату
             anketa.status = 'in_progress'
-            anketa.date_taken_in_work = timezone.now().date()
+            # anketa.date_taken_in_work = timezone.now().date()
+            anketa.date_taken_in_work = (timezone.now() + timedelta(hours=8)).date()
             anketa.responsible_user = request.user
             anketa.save()
 
@@ -261,15 +266,15 @@ class AnketaAdmin(admin.ModelAdmin):
             
             if original.status == 'new' and obj.status == 'new':
                 obj.status = 'in_progress'
-                obj.date_taken_in_work = timezone.now().date()
+                obj.date_taken_in_work = (timezone.now() + timedelta(hours=8)).date()
 
             if (not original.institution and obj.institution) or (original.institution != obj.institution):
                 obj.status = 'processed'
-                obj.date_processed = timezone.now().date()
+                obj.date_processed = (timezone.now() + timedelta(hours=8)).date()
 
             if (original.rating != obj.rating) and obj.rating is not None:
                 obj.status = 'feedback_received'
-                obj.date_feedback_received = timezone.now().date()
+                obj.date_feedback_received = (timezone.now() + timedelta(hours=8)).date()
         else:
             obj.status = 'new'
 

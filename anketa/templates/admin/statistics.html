@@ -27,8 +27,8 @@
             <td>{{ item.institution__name|default:"Не указано" }}</td>
           {% elif title == "Город" %}
             <td>{{ item.city__name|default:"Не указано" }}</td>
-          {% elif title == "Степень родства" %}
-            <td>{{ item.relation_display|default:"Не указано" }}</td>
+            {% elif title == "Статистика по степеням родства" %}
+            <td>{{ item.relation|default:"Не указано" }}</td>
           {% endif %}
           <td>{{ item.count }}</td>
         </tr>

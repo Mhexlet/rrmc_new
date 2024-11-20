@@ -1,4 +1,6 @@
+from datetime import timedelta
 from django.db import models
+from django.utils.timezone import now
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from datetime import datetime, date
@@ -125,7 +127,8 @@ class Anketa(models.Model):
     consent = models.BooleanField(default=False, verbose_name="Согласие на обработку персональных данных")
 
     # Метаданные
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    # created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    created_at = models.DateTimeField(verbose_name="Дата создания", editable=False)
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
 
     # Статус заявки
@@ -175,6 +178,9 @@ class Anketa(models.Model):
 
     # Переопределение метода save для автоматического расчёта возраста в месяцах
     def save(self, *args, **kwargs):
+        if not self.pk:
+            self.created_at = now() + timedelta(hours=8)
+        
         if self.child_birth_date:
             # Если дата рождения представлена в виде строки, преобразуем её в объект `date`
             if isinstance(self.child_birth_date, str):
