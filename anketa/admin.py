@@ -75,12 +75,14 @@ from django.contrib.admin import DateFieldListFilter
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomCRMUser
-        fields = ('username', 'first_name', 'last_name', 'email', 'is_staff', 'is_anketa_manager', 'is_news_manager')
+        # fields = ('username', 'first_name', 'last_name', 'email', 'is_staff', 'is_anketa_manager', 'is_news_manager')
+        fields = ('username', 'first_name', 'last_name', 'email', 'is_staff')
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomCRMUser
-        fields = ('username', 'first_name', 'last_name', 'email', 'is_staff', 'is_anketa_manager', 'is_news_manager')
+        # fields = ('username', 'first_name', 'last_name', 'email', 'is_staff', 'is_anketa_manager', 'is_news_manager')
+        fields = ('username', 'first_name', 'last_name', 'email', 'is_staff')
 
 
 @admin.register(CustomCRMUser)
@@ -89,17 +91,30 @@ class CustomCRMUserAdmin(UserAdmin):
     form = CustomUserChangeForm
     model = CustomCRMUser
 
-    list_display = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'is_anketa_manager', 'is_news_manager']
+    # list_display = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'is_anketa_manager', 'is_news_manager']
+    list_display = ['username', 'first_name', 'last_name', 'email', 'is_staff']
     search_fields = ['username', 'first_name', 'last_name', 'email']
-    list_filter = ['is_staff', 'is_anketa_manager', 'is_news_manager']
+    # list_filter = ['is_staff', 'is_anketa_manager', 'is_news_manager']
+    list_filter = ['is_staff']
 
     # Поля при создании нового пользователя
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'is_staff', 'is_anketa_manager', 'is_news_manager'),
-        }),
-    )
+    (None, {
+        'classes': ('wide',),
+        # 'fields': ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'is_staff', 'is_anketa_manager', 'is_news_manager'),
+        'fields': ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'is_staff'),
+    }),
+    ('Права доступа', {
+        'fields': ('groups', 'user_permissions'),
+    }),
+)
+
+    # add_fieldsets = (
+    #     (None, {
+    #         'classes': ('wide',),
+    #         'fields': ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'is_staff', 'is_anketa_manager', 'is_news_manager'),
+    #     }),
+    # )
 
     # Поля при редактировании существующего пользователя
     fieldsets = (
