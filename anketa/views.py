@@ -226,7 +226,7 @@ class StatisticsByRelationView(TemplateView):
 
 
 
-# @csrf_exempt
+@csrf_exempt
 def anketa_view(request):
     if request.method == 'POST':
         # Определяем, является ли запрос AJAX
