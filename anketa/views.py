@@ -23,6 +23,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Anketa
+from datetime import datetime, timedelta
+from django.utils.timezone import make_aware
 
 
 from django.views.decorators.csrf import csrf_exempt
@@ -41,7 +43,11 @@ class BaseStatisticsView(TemplateView):
         # Проверяем наличие параметра `export=excel` в GET-запросе
         if request.GET.get('export') == 'excel':
             start_date = request.GET.get('start_date', (timezone.now() - timezone.timedelta(days=7)).strftime('%Y-%m-%d'))
-            end_date = request.GET.get('end_date', timezone.now().strftime('%Y-%m-%d'))
+            end_date = self.request.GET.get('end_date', timezone.now().strftime('%Y-%m-%d'))
+
+            # Преобразуем end_date в конец дня
+            end_date = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1) - timedelta(seconds=1)
+            end_date = make_aware(end_date)
             queryset = Anketa.objects.filter(created_at__range=[start_date, end_date])
             statistics = queryset.values(f'{self.group_by_field}__name').annotate(count=Count('id')).order_by('-count')
             return self.export_to_excel(statistics, start_date, end_date)
@@ -54,6 +60,10 @@ class BaseStatisticsView(TemplateView):
 
         start_date = self.request.GET.get('start_date', (timezone.now() - timezone.timedelta(days=7)).strftime('%Y-%m-%d'))
         end_date = self.request.GET.get('end_date', timezone.now().strftime('%Y-%m-%d'))
+
+        # Преобразуем end_date в конец дня
+        end_date = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1) - timedelta(seconds=1)
+        end_date = make_aware(end_date)
         show_top_10 = self.request.GET.get('show_top_10') == 'on'
 
         queryset = Anketa.objects.filter(created_at__range=[start_date, end_date])
@@ -131,6 +141,63 @@ class StatisticsByInstitutionView(BaseStatisticsView):
     group_by_field = 'institution'
     title = "Учреждение"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        start_date = self.request.GET.get('start_date', (timezone.now() - timezone.timedelta(days=7)).strftime('%Y-%m-%d'))
+        end_date = self.request.GET.get('end_date', timezone.now().strftime('%Y-%m-%d'))
+
+        # Преобразуем end_date в конец дня
+        end_date = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1) - timedelta(seconds=1)
+        end_date = make_aware(end_date)
+        show_top_10 = self.request.GET.get('show_top_10') == 'on'
+
+        queryset = Anketa.objects.filter(
+            created_at__range=[start_date, end_date],
+            status__in=['processed', 'feedback_received']
+        )
+        statistics = queryset.values(f'{self.group_by_field}__name').annotate(count=Count('id')).order_by('-count')
+
+        total_count = queryset.count()
+        others_count = 0
+
+        chart_base64 = None
+        if show_top_10 and len(statistics) > 10:
+            top_10 = list(statistics[:10])
+            others_count = sum(item['count'] for item in statistics[10:])
+            max_count = max(item['count'] for item in top_10)
+
+            if others_count <= 2 * max_count:
+                top_10.append({f'{self.group_by_field}__name': 'Прочие', 'count': others_count})
+
+            statistics = top_10
+
+            labels = [item[f'{self.group_by_field}__name'] for item in statistics]
+            counts = [item['count'] for item in statistics]
+
+            fig, ax = plt.subplots(figsize=(6, 4))
+            ax.pie(counts, labels=labels, autopct='%1.1f%%', startangle=140, colors=plt.cm.Paired.colors, textprops={'fontsize': 8})
+            ax.set_title(f'Распределение заявок по {self.title} (Топ-10)', fontsize=10)
+
+            buffer = io.BytesIO()
+            plt.savefig(buffer, format='png', bbox_inches='tight')
+            plt.close(fig)
+            buffer.seek(0)
+            image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+            chart_base64 = f"data:image/png;base64,{image_base64}"
+
+        context.update({
+            'statistics': statistics,
+            'total_count': total_count,
+            'others_count': others_count,
+            'start_date': start_date,
+            'end_date': end_date,
+            'show_top_10': show_top_10,
+            'chart_base64': chart_base64,
+            'title': self.title,
+        })
+        return context
+
 class StatisticsByCityView(BaseStatisticsView):
     group_by_field = 'city'
     title = "Город"
@@ -162,6 +229,10 @@ class StatisticsByRelationView(TemplateView):
         start_date = self.request.GET.get('start_date', (timezone.now() - timezone.timedelta(days=7)).strftime('%Y-%m-%d'))
         end_date = self.request.GET.get('end_date', timezone.now().strftime('%Y-%m-%d'))
 
+        # Преобразуем end_date в конец дня
+        end_date = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1) - timedelta(seconds=1)
+        end_date = make_aware(end_date)
+
         queryset = Anketa.objects.filter(created_at__range=[start_date, end_date])
         statistics = queryset.values('relation').annotate(count=Count('id')).order_by('-count')
 
@@ -185,7 +256,11 @@ class StatisticsByRelationView(TemplateView):
     def get(self, request, *args, **kwargs):
         if request.GET.get('export') == 'excel':
             start_date = request.GET.get('start_date', (timezone.now() - timezone.timedelta(days=7)).strftime('%Y-%m-%d'))
-            end_date = request.GET.get('end_date', timezone.now().strftime('%Y-%m-%d'))
+            end_date = self.request.GET.get('end_date', timezone.now().strftime('%Y-%m-%d'))
+
+            # Преобразуем end_date в конец дня
+            end_date = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1) - timedelta(seconds=1)
+            end_date = make_aware(end_date)
 
             queryset = Anketa.objects.filter(created_at__range=[start_date, end_date])
             statistics = get_relation_statistics(queryset)
