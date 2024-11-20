@@ -136,7 +136,7 @@ class Anketa(models.Model):
         ('new', 'Новая'),
         ('in_progress', 'В работе'),
         ('processed', 'Обработана'),
-        ('feedback_received', 'Получена обратная связь'),
+        ('feedback_received', 'Оценена'),
     ]
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name="Статус заявки")
 
