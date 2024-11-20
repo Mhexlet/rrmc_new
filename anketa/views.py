@@ -102,7 +102,7 @@ class BaseStatisticsView(TemplateView):
             'total_count': total_count,
             'others_count': others_count,
             'start_date': start_date,
-            'end_date': end_date,
+            'end_date': end_date.strftime('%Y-%m-%d'),
             'show_top_10': show_top_10,
             'chart_base64': chart_base64,
             'title': self.title,
@@ -191,7 +191,7 @@ class StatisticsByInstitutionView(BaseStatisticsView):
             'total_count': total_count,
             'others_count': others_count,
             'start_date': start_date,
-            'end_date': end_date,
+            'end_date': end_date.strftime('%Y-%m-%d'),
             'show_top_10': show_top_10,
             'chart_base64': chart_base64,
             'title': self.title,
@@ -250,7 +250,7 @@ class StatisticsByRelationView(TemplateView):
             'total_count': total_count,
             'title': "Статистика по степеням родства",
             'start_date': start_date,
-            'end_date': end_date,
+            'end_date': end_date.strftime('%Y-%m-%d'),
         })
         return context
     def get(self, request, *args, **kwargs):
