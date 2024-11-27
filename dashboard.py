@@ -96,6 +96,58 @@ class CustomIndexDashboard(Dashboard):
                 ]
             ))
 
+            # ТАК ДЕЛАТЬ НЕЛЬЗЯЯЯЯЯ
+            new_count = Anketa.objects.filter(status='new').count()
+            in_progress_count = Anketa.objects.filter(status='in_progress').count()
+            processed_count = Anketa.objects.filter(status='processed').count()
+            feedback_count = Anketa.objects.filter(status='feedback_received').count()
+            total_count = Anketa.objects.all().count()
+
+            # Создаём модуль уведомлений
+            self.children.append(modules.LinkList(
+                _('Уведомления по анкетам'),
+                draggable=False,
+                deletable=False,
+                collapsible=False,
+                children=[
+                    {
+                        'title': f'Количество новых анкет: {new_count}',
+                        'url': '/admin/anketa/anketa/?status=new',
+                        'attrs': {
+                            'style': 'font-weight: bold; color: red;' if new_count > 0 else ''
+                        }
+                    },
+                    {
+                        'title': f'Анкеты в работе: {in_progress_count}',
+                        'url': '/admin/anketa/anketa/?status=in_progress',
+                        'attrs': {
+                            'style': 'font-weight: bold; color: green;' if in_progress_count > 0 else ''
+                        }
+                    },
+                    {
+                        'title': f'Обработанные анкеты: {processed_count}',
+                        'url': '/admin/anketa/anketa/?status=processed',
+                        'attrs': {
+                            'style': 'font-weight: bold; color: blue;' if processed_count > 0 else ''
+                        }
+                    },
+                    {
+                        'title': f'Анкеты с обратной связью: {feedback_count}',
+                        'url': '/admin/anketa/anketa/?status=feedback_received',
+                        'attrs': {
+                            'style': 'font-weight: bold; color: orange;' if feedback_count > 0 else ''
+                        }
+                    },
+                    {
+                        'title': f'Всего анкет: {total_count}',
+                        'url': '/admin/anketa/anketa/',
+                        'attrs': {
+                            'style': 'font-weight: bold;'
+                        }
+                    },
+                ]
+            ))
+
             # Добавляем модуль альбомов и наборов файлов
             self.children.append(modules.LinkList(
                 _('Альбомы и наборы файлов'),
