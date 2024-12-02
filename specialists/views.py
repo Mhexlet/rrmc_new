@@ -10,6 +10,7 @@ from authentication.models import User, FieldOfActivity
 from main.models import SiteContent
 from .models import Article, ArticleFile, ArticleApprovalApplication
 from custom.models import Section, Page
+from django.db.models import Q
 
 
 from rest_framework.views import APIView
@@ -100,11 +101,17 @@ class SpecialistsList(ListView):
 
 # views.py
 
-
 class SpecialistListView(APIView):
     def get(self, request):
         field_of_activity_id = request.GET.get('field_of_activity')
-        specialists = User.objects.filter(is_superuser=False, approved=True)
+
+        # Фильтруем пользователей, исключая CustomCRMUser
+        specialists = User.objects.filter(
+            is_superuser=False,
+            approved=True
+        ).exclude(
+            Q(customcrmuser__isnull=False)
+        )
 
         if field_of_activity_id:
             specialists = specialists.filter(fields__foa_id=field_of_activity_id)
@@ -112,6 +119,17 @@ class SpecialistListView(APIView):
         specialists = specialists.order_by('order')
         serializer = SpecialistSerializer(specialists, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+# class SpecialistListView(APIView):
+#     def get(self, request):
+#         field_of_activity_id = request.GET.get('field_of_activity')
+#         specialists = User.objects.filter(is_superuser=False, approved=True)
+
+#         if field_of_activity_id:
+#             specialists = specialists.filter(fields__foa_id=field_of_activity_id)
+
+#         specialists = specialists.order_by('order')
+#         serializer = SpecialistSerializer(specialists, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class FieldOfActivityListView(APIView):
     def get(self, request):
