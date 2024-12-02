@@ -258,6 +258,31 @@ class CustomIndexDashboard(Dashboard):
                     'url': '/anketa/statistics/relations/',
                     'attrs': {'style': 'font-weight: bold;'}
                 },
+                {
+                    'title': 'Предпочтительный способ связи',
+                    'url': '/anketa/statistics/contact/',
+                    'attrs': {'style': 'font-weight: bold;'}
+                },
+                {
+                    'title': 'Предпочтительное время связи',
+                    'url': '/anketa/statistics/time/',
+                    'attrs': {'style': 'font-weight: bold;'}
+                },
+                {
+                    'title': 'Причина обращения',
+                    'url': '/anketa/statistics/reasons/',
+                    'attrs': {'style': 'font-weight: bold;'}
+                },
+                {
+                    'title': 'Источник информации',
+                    'url': '/anketa/statistics/sources/',
+                    'attrs': {'style': 'font-weight: bold;'}
+                },
+                {
+                    'title': 'Статистика по возрасту',
+                    'url': '/anketa/statistics/age/',
+                    'attrs': {'style': 'font-weight: bold;'}
+                },
             ]
         ))
         # Добавляем модуль последних действий

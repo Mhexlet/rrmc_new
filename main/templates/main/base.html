@@ -30,36 +30,49 @@
             </div>
             <div class="base-menu">
                 {% block menu %}
-                    <a href="{% url 'index' %}" class="menu-page{% if 'index' in request.resolver_match.url_name %} active{% endif %}">Главная</a>
-                    {% for section in menu_sections %}
-                        <div class="menu-section-block{% if current_page and current_page.section.pk == section.pk %} active{% endif %}" id="menu-section-{{ section.pk }}">
-                            <span class="menu-section">{{ section.name }}
+                <a href="{% url 'index' %}" class="menu-page{% if 'index' in request.resolver_match.url_name %} active{% endif %}">Главная</a>
+                {% for section in menu_sections %}
+                    <div class="menu-section-block{% if current_page and current_page.section.pk == section.pk %} active{% endif %}" id="menu-section-{{ section.pk }}">
+                        <span class="menu-section">{{ section.name }}
                             <img src="{% static 'img/menu-arrow.svg' %}" alt=">" class="menu-section-arrow"{% if current_page and current_page.section.pk == section.pk %} style="transform: rotate(-90deg);"{% endif %}>
-                        </div>
-                        <div class="menu-section-dropdown" id="menu-dropdown-{{ section.pk }}"{% if current_page and current_page.section.pk == section.pk %} style="display: flex; height: auto;"{% endif %}>
-                            {% for page in section.get_pages %}
-                                {% if page.approved or user.is_staff %}
-                                    <a href="{% url 'custom:constructor' url=page.url %}" class="menu-section-page{% if page.url == request.resolver_match.kwargs.url %} active{% endif %}">
-                                        {{ page.title }}<div class="menu-section-page-circle"></div>
-                                    </a>
-                                {% endif %}
-                            {% endfor %}
-                            {% if section.pk == account_section_id %}
-                                {% if user.is_superuser %}
-                                    <a href="{% url 'admin:index' %}" class="menu-section-page">Личный кабинет<div class="menu-section-page-circle"></div></a>
-                                {% elif user.is_authenticated %}
-                                    <a href="{% url 'specialists:account' %}" class="menu-section-page">Личный кабинет<div class="menu-section-page-circle"></div></a>
-                                {% else %}
-                                    <a href="{% url 'authentication:login' %}" class="menu-section-page{% if 'login' in request.resolver_match.namespace %} active{% endif %}">Личный кабинет<div class="menu-section-page-circle"></div></a>
-                                {% endif %}
-                            {% endif%}
-                        </div>
-                    {% endfor %}
-                    {% for page in menu_pages %}
-                        {% if page.approved or user.is_staff %}
-                            <a href="{% url 'custom:constructor' url=page.url %}" class="menu-page{% if page.url == request.resolver_match.kwargs.url %} active{% endif %}">{{ page.title }}</a>
+                        </span>
+                    </div>
+                    <div class="menu-section-dropdown" id="menu-dropdown-{{ section.pk }}"{% if current_page and current_page.section.pk == section.pk %} style="display: flex; height: auto;"{% endif %}>
+                        {% for page in section.get_pages %}
+                            {% if page.approved or user.is_staff %}
+                                <a href="{% url 'custom:constructor' url=page.url %}" class="menu-section-page{% if page.url == request.resolver_match.kwargs.url %} active{% endif %}">
+                                    {{ page.title }}
+                                    <div class="menu-section-page-circle"></div>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        {% if section.pk == account_section_id %}
+                            {% if user.is_superuser %}
+                                <a href="{% url 'admin:index' %}" class="menu-section-page">Личный кабинет<div class="menu-section-page-circle"></div></a>
+                            {% elif user.is_authenticated %}
+                                <a href="{% url 'specialists:account' %}" class="menu-section-page">Личный кабинет<div class="menu-section-page-circle"></div></a>
+                            {% else %}
+                                <a href="{% url 'authentication:login' %}" class="menu-section-page{% if 'login' in request.resolver_match.namespace %} active{% endif %}">Личный кабинет<div class="menu-section-page-circle"></div></a>
+                            {% endif %}
                         {% endif %}
-                    {% endfor %}
+                    </div>
+                    
+                    {# Вставка ссылки "Подать заявку" после раздела "Родителям" #}
+                    {% if section.name == "Родителям" %}
+                        <a href="{% url 'anketa' %}" class="menu-page{% if 'anketa' in request.resolver_match.url_name %} active{% endif %}">
+                            Подать заявку
+                        </a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% for page in menu_pages %}
+                    {% if page.approved or user.is_staff %}
+                        <a href="{% url 'custom:constructor' url=page.url %}" class="menu-page{% if page.url == request.resolver_match.kwargs.url %} active{% endif %}">
+                            {{ page.title }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+                
                     <!-- <a href="{% url 'anketa' %}" class="menu-page{% if 'anketa' in request.resolver_match.url_name %} active{% endif %}">Подать заявку</a> -->
                     <a href="{% url 'news' %}" class="menu-page{% if 'news' in request.resolver_match.url_name %} active{% endif %}">Новости</a>
                     <a href="{% url 'geography' %}" class="menu-page{% if 'geography' in request.resolver_match.url_name %} active{% endif %}">География ранней помощи </a>

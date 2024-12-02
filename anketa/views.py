@@ -294,8 +294,223 @@ class StatisticsByRelationView(TemplateView):
         workbook.save(response)
         return response
 
+class StatisticsByContactView(TemplateView):
+    template_name = "admin/statistics_by_contact.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Определяем тип статистики на основе имени маршрута
+        if self.request.resolver_match.url_name == 'statistics_by_contact':
+            stat_type = 'contact'
+        elif self.request.resolver_match.url_name == 'statistics_by_time':
+            stat_type = 'time'
+        elif self.request.resolver_match.url_name == 'statistics_by_reasons':
+            stat_type = 'reasons'
+        elif self.request.resolver_match.url_name == 'statistics_by_sources':
+            stat_type = 'sources'
+        else:
+            stat_type = 'unknown'
+
+        # Параметры фильтрации
+        start_date = self.request.GET.get('start_date', (timezone.now() - timezone.timedelta(days=7)).strftime('%Y-%m-%d'))
+        end_date = self.request.GET.get('end_date', timezone.now().strftime('%Y-%m-%d'))
+
+        end_date_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1) - timedelta(seconds=1)
+        end_date_aware = make_aware(end_date_dt)
+
+        queryset = Anketa.objects.filter(created_at__range=[start_date, end_date_aware])
+
+        # Обработка разных типов статистики
+        if stat_type == 'contact':
+            statistics = self.get_contact_statistics(queryset)
+            title = "Статистика по предпочитаемым способам связи"
+            choices = dict(Anketa.CONTACT_CHOICES)
+            field_name = 'contact'
+        elif stat_type == 'time':
+            statistics = self.get_time_statistics(queryset)
+            title = "Статистика по предпочитаемому времени связи"
+            choices = dict(Anketa.TIME_CHOICES)
+            statistics = [{'time': item['preferred_time'], 'count': item['count']} for item in statistics]
+            field_name = 'time'
+        elif stat_type == 'reasons':
+            statistics = self.get_reasons_statistics(queryset)
+            title = "Статистика по причинам обращения"
+            choices = dict(Anketa.REASON_CHOICES)
+            field_name = 'reason'
+        elif stat_type == 'sources':
+            statistics = self.get_sources_statistics(queryset)
+            title = "Статистика по источникам информации"
+            choices = dict(Anketa.SOURCE_CHOICES)
+            field_name = 'source'
+        else:
+            statistics = []
+            title = "Неизвестная статистика"
+            choices = {}
+            field_name = 'unknown'
+
+        # Форматируем статистику
+        formatted_statistics = [
+            {'label': choices.get(item[field_name], "Не указано"), 'count': item['count']}
+            for item in statistics
+        ]
+
+        total_count = sum(item['count'] for item in statistics)
+
+        context.update({
+            'statistics': formatted_statistics,
+            'total_count': total_count,
+            'title': title,
+            'start_date': start_date,
+            'end_date': end_date,
+        })
+        return context
+
+    def get_contact_statistics(self, queryset):
+        contact_counts = {}
+        for anketa in queryset:
+            contacts = anketa.preferred_contact
+            if isinstance(contacts, list):
+                for contact in contacts:
+                    contact_counts[contact] = contact_counts.get(contact, 0) + 1
+            elif isinstance(contacts, str):
+                contact_counts[contacts] = contact_counts.get(contact, 0) + 1
+        return [{'contact': contact, 'count': count} for contact, count in contact_counts.items()]
+
+    def get_time_statistics(self, queryset):
+        return queryset.values('preferred_time').annotate(count=Count('id')).order_by('-count')
+
+    def get_reasons_statistics(self, queryset):
+        reasons_counts = {}
+        for anketa in queryset:
+            reasons = anketa.reasons
+            if isinstance(reasons, list):
+                for reason in reasons:
+                    reasons_counts[reason] = reasons_counts.get(reason, 0) + 1
+        return [{'reason': reason, 'count': count} for reason, count in reasons_counts.items()]
+
+    def get_sources_statistics(self, queryset):
+        sources_counts = {}
+        for anketa in queryset:
+            sources = anketa.sources
+            if isinstance(sources, list):
+                for source in sources:
+                    sources_counts[source] = sources_counts.get(source, 0) + 1
+        return [{'source': source, 'count': count} for source, count in sources_counts.items()]
 
 
+    
+class StatisticsByAgeView(TemplateView):
+    template_name = "admin/statistics_by_age.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Получение параметров даты из GET-запроса или установка значений по умолчанию
+        start_date = self.request.GET.get('start_date', (timezone.now() - timezone.timedelta(days=7)).strftime('%Y-%m-%d'))
+        end_date = self.request.GET.get('end_date', timezone.now().strftime('%Y-%m-%d'))
+
+        # Преобразуем end_date в конец дня
+        end_date_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1) - timedelta(seconds=1)
+        end_date_aware = make_aware(end_date_dt)
+
+        # Фильтрация записей в диапазоне дат
+        queryset = Anketa.objects.filter(created_at__range=[start_date, end_date_aware])
+
+        # Категории возрастов
+        age_categories = [
+            (0, 6, "0 - 6 месяцев"),
+            (7, 12, "7 - 12 месяцев"),
+            (13, 24, "13 - 24 месяца (2 года)"),
+            (25, 48, "25 - 48 месяцев (2 - 4 года)"),
+            (49, 84, "49 - 84 месяца (5 - 7 лет)"),
+            (85, 1000, "Больше 7 лет"),
+        ]
+
+        # Подсчёт записей в каждой категории
+        age_statistics = []
+        for min_age, max_age, label in age_categories:
+            count = queryset.filter(child_age_in_months__gte=min_age, child_age_in_months__lte=max_age).count()
+            age_statistics.append({'label': label, 'count': count})
+
+        # Общее количество записей
+        total_count = sum(item['count'] for item in age_statistics)
+
+        context.update({
+            'statistics': age_statistics,
+            'total_count': total_count,
+            'title': "Статистика по возрасту ребёнка",
+            'start_date': start_date,
+            'end_date': end_date,
+        })
+        return context
+
+    def get(self, request, *args, **kwargs):
+        if request.GET.get('export') == 'excel':
+            start_date = request.GET.get('start_date', (timezone.now() - timezone.timedelta(days=7)).strftime('%Y-%m-%d'))
+            end_date = self.request.GET.get('end_date', timezone.now().strftime('%Y-%m-%d'))
+
+            # Преобразуем end_date в конец дня
+            end_date_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1) - timedelta(seconds=1)
+            end_date_aware = make_aware(end_date_dt)
+
+            queryset = Anketa.objects.filter(created_at__range=[start_date, end_date_aware])
+            return self.export_to_excel(queryset, start_date, end_date)
+
+        return super().get(request, *args, **kwargs)
+
+    def export_to_excel(self, queryset, start_date, end_date):
+        workbook = openpyxl.Workbook()
+        worksheet = workbook.active
+        worksheet.title = "Статистика по возрасту"
+
+        # Заголовки таблицы
+        headers = ["Возраст", "Количество заявок"]
+        for col_num, header in enumerate(headers, 1):
+            col_letter = get_column_letter(col_num)
+            worksheet[f"{col_letter}1"] = header
+            worksheet[f"{col_letter}1"].font = openpyxl.styles.Font(bold=True)
+
+        # Категории возрастов
+        age_categories = [
+            (0, 6, "0 - 6 месяцев"),
+            (7, 12, "7 - 12 месяцев"),
+            (13, 24, "13 - 24 месяца (2 года)"),
+            (25, 48, "25 - 48 месяцев (2 - 4 года)"),
+            (49, 84, "49 - 84 месяца (5 - 7 лет)"),
+            (85, 1000, "Больше 7 лет"),
+        ]
+
+        # Заполняем таблицу
+        row_num = 2
+        for min_age, max_age, label in age_categories:
+            count = queryset.filter(child_age_in_months__gte=min_age, child_age_in_months__lte=max_age).count()
+            worksheet[f"A{row_num}"] = label
+            worksheet[f"B{row_num}"] = count
+            row_num += 1
+
+        # Итоговая строка
+        worksheet[f"A{row_num}"] = "Всего"
+        worksheet[f"B{row_num}"] = sum(
+            queryset.filter(child_age_in_months__gte=min_age, child_age_in_months__lte=max_age).count()
+            for min_age, max_age, label in age_categories
+        )
+        worksheet[f"A{row_num}"].font = openpyxl.styles.Font(bold=True)
+        worksheet[f"B{row_num}"].font = openpyxl.styles.Font(bold=True)
+
+        # Настройка ширины колонок
+        worksheet.column_dimensions["A"].width = 30
+        worksheet.column_dimensions["B"].width = 20
+
+        # Подготовка ответа
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response[
+            "Content-Disposition"
+        ] = f'attachment; filename="age_statistics_{start_date}_{end_date}.xlsx"'
+        workbook.save(response)
+        return response
 
 
 

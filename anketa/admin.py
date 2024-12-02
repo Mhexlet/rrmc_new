@@ -178,7 +178,7 @@ class AnketaAdmin(admin.ModelAdmin):
         }),
 
         ("Статус и оценка", {
-            'fields': ('status', 'rating', 'date_taken_in_work', 'date_processed', 'date_feedback_received', 'created_at')
+            'fields': ('status', 'rating', 'date_taken_in_work', 'date_processed', 'date_feedback_received', 'created_at', 'is_hidden')
         }),
     )
     list_filter = ['status', 'rating', ('created_at', DateFieldListFilter), 'is_hidden', 'relation']
