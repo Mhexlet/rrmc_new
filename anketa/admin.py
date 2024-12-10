@@ -147,9 +147,7 @@ class AnketaAdmin(admin.ModelAdmin):
         ("Контактные данные", {
             'fields': ('main_phone', 'additional_phone', 'main_email', 'additional_email', 'preferred_contact_display', 'preferred_time')
         }),
-        # ("Информация о ребенке", {
-        #     'fields': ('child_last_name', 'child_first_name', 'child_middle_name', 'child_birth_date', 'child_age_in_months')
-        # }),
+
         ("Информация о ребенке", {
             'fields': ('child_last_name', 'child_first_name', 'child_middle_name', 'child_birth_date', 'get_age_display')
         }),
@@ -159,15 +157,17 @@ class AnketaAdmin(admin.ModelAdmin):
         ("Причины обращения", {
             'fields': ('reasons_display', 'reason_other')
         }),
-        # ("Документ и согласие", {
-        #     'fields': ('referral_document', )
-        # }),
         ("Документ и согласие", {
             'fields': ('referral_document_link',)
         }),
 
+        # ("Выберете учреждение для направления", {
+        #     'fields': ('institution',)
+        # }),
+        # Новый раздел для выбора учреждения
         ("Выберете учреждение для направления", {
-            'fields': ('institution',)
+            # Сначала выбираем "Регион учреждения", затем "Учреждение"
+            'fields': ('region_city', 'institution')
         }),
         
         ("Источник информации", {

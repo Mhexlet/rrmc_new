@@ -9,6 +9,8 @@ from authentication.models import User
 from django.conf import settings
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
+from smart_selects.db_fields import ChainedForeignKey
+
 
 
 
@@ -86,9 +88,31 @@ class Anketa(models.Model):
         related_name='anketas'
     )
 
-    institution = models.ForeignKey(
-        'main.Institution',
+    # Регион учреждения (новое поле)
+    region_city = models.ForeignKey(
+        'main.Place',
         on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Регион учреждения",
+        related_name='anketas_by_region'
+    )
+
+    # institution = models.ForeignKey(
+    #     'main.Institution',
+    #     on_delete=models.SET_NULL,
+    #     null=True,
+    #     blank=True,
+    #     verbose_name='Учреждение',
+    #     related_name='anketas'
+    # )
+    institution = ChainedForeignKey(
+        'main.Institution',
+        chained_field="region_city",           # поле, к которому мы "привязываемся"
+        chained_model_field="place",    # поле в модели Institution, ссылающееся на city
+        show_all=False,
+        auto_choose=True,
+        sort=True,
         null=True,
         blank=True,
         verbose_name='Учреждение',
