@@ -117,12 +117,25 @@ class Place(models.Model):
 
 
 class Institution(models.Model):
+    class Category(models.TextChoices):
+        NOT_SPECIFIED = "not_specified", "Не задано"
+        SOCIAL_DEVELOPMENT = "social_development", "Министерство социального развития, опеки и попечительства Иркутской области"
+        EDUCATION = "education", "Министерство образования Иркутской области"
+        HEALTHCARE = "healthcare", "Министерство здравоохранения Иркутской области"
+        NON_PROFIT = "non_profit", "Социально-ориентированные некоммерческие организации Иркутской области"
+
 
     name = models.CharField(max_length=256, verbose_name='Название')
     place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='institutions', verbose_name='Город')
     phone_number = models.CharField(max_length=16, verbose_name='Номер телефона')
     address = models.TextField(verbose_name='Адрес')
     link = models.TextField(null=True, blank=True, verbose_name='Ссылка')
+    category = models.CharField(
+        max_length=32,
+        choices=Category.choices,
+        default=Category.NOT_SPECIFIED,
+        verbose_name="Категория"
+    )
 
     class Meta:
         verbose_name = 'Учреждение из географии ранней помощи'
