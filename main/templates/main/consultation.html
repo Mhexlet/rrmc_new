@@ -24,8 +24,10 @@
     <div class="consultation-form-subblock">
         <div class="form-group g-recaptcha" data-sitekey="6Lf_F2YoAAAAAAVQNp1zYPQk7S5cdxh7ylOkxGCU"></div>
         <div class="consultation-checkbox-block"><input type="checkbox" class="consultation-checkbox"><span>Даю согласие на обработку персональных данных</span></div>
-        <a {% if rules_url %}href="{% url 'custom:constructor' url=rules_url %}"{% else %}href="#"{% endif %} class="consultation-read-link">Правила обработки персональных данных</a>
-        <span class="med-button consultation-submit">Отправить</span>
+        <a href="https://www.orc-rrmc.ru/custom/personal_data/" class="consultation-read-link">
+            Правила обработки персональных данных
+        </a>
+                <span class="med-button consultation-submit">Отправить</span>
     </div>
 </div>
 <div class="faq-background">
