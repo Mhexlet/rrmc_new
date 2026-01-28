@@ -111,7 +111,9 @@ class InstitutionAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'place', 'category', 'phone_number', 'address', 'link')
     
     # Добавляем фильтр по категориям
-    list_filter = ('category',)
+    list_filter = ('category', 'place')
+    search_fields = ('name', 'place__name')
+
     
     # Делаем категорию редактируемой прямо в списке
     list_editable = ('category', 'phone_number', 'address', 'link')

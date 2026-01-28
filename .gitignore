@@ -21,3 +21,14 @@ tailwind.config.js
 # Игнорировать файлы, которые не нужны для отслеживания
 f.txt
 json
+
+# Local Environment
+venv/
+static_from_server/
+staticfiles/
+*.dump
+*.sql
+*.sql.gz
+
+# Settings
+MedProject/settings.py
