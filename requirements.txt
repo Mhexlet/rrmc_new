@@ -7,7 +7,7 @@ colorama==0.4.6
 Django==4.2.5
 django-admin-tools==0.9.3
 django-recaptcha==3.0.0
-django-summernote==0.8.20.0
+django-ckeditor-5>=0.2.15
 idna==3.4
 libretranslatepy==2.1.1
 lxml

@@ -4,9 +4,10 @@ from uuid import uuid4
 import calendar
 
 from django.contrib import admin
+from django.db import models
 from .models import Section, Page, AlbumBlock, FileSetBlock, AlbumImage, FileSetFile
 from django.db.models.fields.reverse_related import ManyToOneRel
-from django_summernote.admin import SummernoteModelAdmin
+from django_ckeditor_5.widgets import CKEditor5Widget
 from MedProject.settings import BASE_DIR
 import os
 
@@ -84,12 +85,14 @@ class FileSetFileAdmin(admin.ModelAdmin):
 
 
 @admin.register(Page)
-class PageAdmin(SummernoteModelAdmin):
+class PageAdmin(admin.ModelAdmin):
     list_display = ['pk', 'title', 'url', 'section', 'short_content', 'approved']
     list_filter = ('title', 'url', 'section')
     search_fields = ['title', 'url', 'section']
-    summernote_fields = ('content',)
     exclude = ('url',)
+    formfield_overrides = {
+        models.TextField: {'widget': CKEditor5Widget(config_name='default')},
+    }
 
     def short_content(self, obj):
         return obj.content[:50] + '...'
@@ -97,9 +100,5 @@ class PageAdmin(SummernoteModelAdmin):
     short_content.short_description = 'Содержимое'
 
     def save_model(self, request, obj, form, change):
-        try:
-            shutil.rmtree(os.path.join(BASE_DIR, 'media', 'django-summernote'))
-        except (FileNotFoundError, PermissionError):
-            pass
         return super().save_model(request, obj, form, change)
 

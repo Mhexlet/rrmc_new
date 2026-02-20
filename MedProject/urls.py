@@ -49,7 +49,7 @@ urlpatterns = [
     path('authentication/', include('authentication.urls', namespace='authentication')),
     path('specialists/', include('specialists.urls', namespace='specialists')),
 
-    path('editor/', include('django_summernote.urls')),
+    path('ckeditor5/', include('django_ckeditor_5.urls')),
     path('jsi18n', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     path('password-reset/', PasswordResetView.as_view(template_name='authentication/password_reset.html'), name='password_reset'),
     path('password-reset/done/', PasswordResetDoneView.as_view(template_name='authentication/password_reset_done.html'), name='password_reset_done'),

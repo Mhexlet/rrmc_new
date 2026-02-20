@@ -3,12 +3,13 @@ import re
 import shutil
 
 from django.contrib import admin
+from django.db import models
 
 from MedProject.settings import BASE_DIR
 from authentication.models import compress_img
 from .models import QuestionAnswer, Review, MainSliderImage, Application, Place, News, SiteContent, Banner, IndexLink, \
     Institution
-from django_summernote.admin import SummernoteModelAdmin
+from django_ckeditor_5.widgets import CKEditor5Widget
 
 
 
@@ -148,10 +149,12 @@ class InstitutionAdmin(admin.ModelAdmin):
 
 
 @admin.register(News)
-class NewsAdmin(SummernoteModelAdmin):
+class NewsAdmin(admin.ModelAdmin):
     list_display = ['id', 'title', 'image', 'date']
-    summernote_fields = ('content',)
     list_display_links = ('id', 'title',)
+    formfield_overrides = {
+        models.TextField: {'widget': CKEditor5Widget(config_name='default')},
+    }
 
     def save_model(self, request, obj, form, change):
         if not change or (change and 'image' in form.changed_data):
@@ -161,10 +164,6 @@ class NewsAdmin(SummernoteModelAdmin):
                 except (FileNotFoundError, UnicodeEncodeError):
                     pass
             compress_img(form.instance, 'image', 'images')
-        try:
-            shutil.rmtree(os.path.join(BASE_DIR, 'media', 'django-summernote'))
-        except (FileNotFoundError, PermissionError):
-            pass
         return super(NewsAdmin, self).save_model(request, obj, form, change)
 
 

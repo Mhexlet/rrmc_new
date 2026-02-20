@@ -9,7 +9,6 @@ from django.contrib.auth.models import AbstractUser
 from django.dispatch import receiver
 from datetime import datetime, timedelta
 import pytz
-from django_summernote.models import Attachment
 from PIL import Image, ImageOps
 from MedProject.settings import BASE_DIR, BASE_URL
 from django.conf import settings
@@ -286,31 +285,4 @@ def delete_user_photo(sender, instance, using, origin, **kwargs):
 #         pass
 
 
-@receiver(models.signals.pre_save, sender=Attachment)
-def compress_attachment(sender, instance, **kwargs):
-    file = instance.file.name
-    ext = f'.{file.split(".")[-1]}'
-    exts = Image.registered_extensions()
-    supported_extensions = {ex for ex, f in exts.items() if f in Image.OPEN}
-    if ext in supported_extensions:
-        img = Image.open(instance.file)
-        img = ImageOps.exif_transpose(img)
-        current_gmt = time.gmtime()
-        time_stamp = calendar.timegm(current_gmt)
-        file_name = f'{time_stamp}-{uuid4().hex}.jpg'
-        new_file_path = os.path.join(BASE_DIR, 'media', 'attachments', file_name)
-        width = img.size[0]
-        height = img.size[1]
-        ratio = width / height
-        if ratio > 1 and width > 1024:
-            sizes = [1024, int(1024 / ratio)]
-            img = img.resize(sizes)
-        elif height > 1024:
-            sizes = [int(1024 * ratio), 1024]
-            img = img.resize(sizes)
-        try:
-            img.save(new_file_path, quality=90, optimize=True)
-        except OSError:
-            img = img.convert("RGB")
-            img.save(new_file_path, quality=90, optimize=True)
-        instance.file = f'attachments/{file_name}'
+

@@ -1,10 +1,11 @@
 import os
+from django.db import models
 from django.utils.html import format_html
 from django.contrib import admin
 from MedProject.settings import BASE_DIR, BASE_URL
 from .models import FieldOfActivity, User, UserApprovalApplication, UserEditApplication, FoAUserConnection
 from django.db.models.fields.reverse_related import ManyToOneRel
-from django_summernote.admin import SummernoteModelAdmin
+from django_ckeditor_5.widgets import CKEditor5Widget
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
@@ -19,7 +20,7 @@ class FieldOfActivityAdmin(admin.ModelAdmin):
     list_display = [field.name for field in FieldOfActivity._meta.get_fields() if type(field) != ManyToOneRel]
 
 @admin.register(User)
-class UserAdmin(SummernoteModelAdmin):
+class UserAdmin(admin.ModelAdmin):
     list_display = ['id', 'username', 'last_login', 'first_name', 'patronymic', 'last_name', 'order', 'birthdate',
                     'fields_of_activity', 'profession', 'city', 'workplace_address', 'workplace_name',
                     'phone_number', 'email', 'photo', 'short_description', 'email_verified']
@@ -27,7 +28,9 @@ class UserAdmin(SummernoteModelAdmin):
                'verification_key_expires')
 
     list_display_links = ('id', 'username', 'first_name', 'patronymic', 'last_name')
-    summernote_fields = ('description',)
+    formfield_overrides = {
+        models.TextField: {'widget': CKEditor5Widget(config_name='default')},
+    }
 
     def get_queryset(self, request):
         # Получаем базовый QuerySet

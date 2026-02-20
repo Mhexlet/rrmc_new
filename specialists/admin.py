@@ -1,18 +1,21 @@
 from datetime import datetime
 
 from django.contrib import admin
+from django.db import models
 from django.utils.html import format_html
 
 from .models import Article, ArticleFile, ArticleApprovalApplication
-from django_summernote.admin import SummernoteModelAdmin
+from django_ckeditor_5.widgets import CKEditor5Widget
 from MedProject.settings import BASE_URL
 
 
 @admin.register(Article)
-class ArticleAdmin(SummernoteModelAdmin):
+class ArticleAdmin(admin.ModelAdmin):
     list_display = ['author', 'hidden', 'theme', 'title', 'short_text', 'created_at', 'approved_at', 'approved']
-    summernote_fields = ('text',)
     readonly_fields = ['files']
+    formfield_overrides = {
+        models.TextField: {'widget': CKEditor5Widget(config_name='default')},
+    }
 
     def short_text(self, obj):
         return obj.text[:50] + '...'

@@ -32,3 +32,4 @@ staticfiles/
 
 # Settings
 MedProject/settings.py
+MedProject/settings_prod.py
