@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {% endfor %}
         <div class="consultation-checkbox-block">
             <input type="checkbox" class="consultation-checkbox">
-            <span>Даю согласие на обработку персональных данных</span>
+            <span>Даю согласие на обработку персональных данных и соглашаюсь с <a href="https://orc-rrmc.ru/media/documents/1746437040-ef755b9f5f454aa79834442f2ea5e806.pdf" target="_blank" style="color: inherit; text-decoration: underline;">политикой конфиденциальности</a></span>
         </div>
         <a href="{{ BASE_URL }}/custom/personal_data/" target="_blank" class="consultation-read-link">Правила обработки персональных данных</a>
         <!-- <a {% if rules_url %}href="{% url 'custom:constructor' url=rules_url %}"{% else %}href="#"{% endif %} class="consultation-read-link">Правила обработки персональных данных</a> -->
