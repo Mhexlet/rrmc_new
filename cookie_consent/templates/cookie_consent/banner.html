@@ -1,0 +1,178 @@
+<!-- Cookie Consent Banner -->
+<div id="cookie-consent-banner" class="cookie-banner" style="display: none;">
+    <div class="cookie-banner__inner">
+        <div class="cookie-banner__icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="8" cy="9" r="1.5" fill="currentColor"/>
+                <circle cx="14" cy="7" r="1" fill="currentColor"/>
+                <circle cx="16" cy="13" r="1.5" fill="currentColor"/>
+                <circle cx="10" cy="15" r="1" fill="currentColor"/>
+                <circle cx="13" cy="11" r="1" fill="currentColor"/>
+            </svg>
+        </div>
+        <p class="cookie-banner__text">{{ cookie_consent_message }}</p>
+        <div class="cookie-banner__actions">
+            <a href="{{ cookie_consent_policy_url }}" class="cookie-banner__btn cookie-banner__btn--details">Подробнее</a>
+            <button type="button" id="cookie-consent-accept" class="cookie-banner__btn cookie-banner__btn--accept">Принять</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cookie-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 99999;
+        background: rgba(30, 41, 59, 0.97);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 0;
+        box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
+        animation: cookieSlideUp 0.4s ease-out;
+    }
+
+    @keyframes cookieSlideUp {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .cookie-banner__inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 18px 28px;
+        flex-wrap: wrap;
+    }
+
+    .cookie-banner__icon {
+        color: #60a5fa;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .cookie-banner__text {
+        flex: 1;
+        margin: 0;
+        color: #e2e8f0;
+        font-size: 13.5px;
+        line-height: 1.55;
+        min-width: 200px;
+    }
+
+    .cookie-banner__actions {
+        display: flex;
+        gap: 10px;
+        flex-shrink: 0;
+        align-items: center;
+    }
+
+    .cookie-banner__btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 9px 22px;
+        border-radius: 8px;
+        font-size: 13.5px;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        border: none;
+        font-family: inherit;
+    }
+
+    .cookie-banner__btn--details {
+        background: transparent;
+        color: #93c5fd;
+        border: 1px solid rgba(147, 197, 253, 0.3);
+    }
+
+    .cookie-banner__btn--details:hover {
+        background: rgba(147, 197, 253, 0.1);
+        border-color: rgba(147, 197, 253, 0.5);
+        color: #bfdbfe;
+    }
+
+    .cookie-banner__btn--accept {
+        background: #3b82f6;
+        color: #fff;
+    }
+
+    .cookie-banner__btn--accept:hover {
+        background: #2563eb;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Адаптив для мобильных */
+    @media (max-width: 640px) {
+        .cookie-banner__inner {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 16px 18px;
+            gap: 14px;
+        }
+
+        .cookie-banner__icon {
+            display: none;
+        }
+
+        .cookie-banner__text {
+            font-size: 12.5px;
+        }
+
+        .cookie-banner__actions {
+            justify-content: stretch;
+        }
+
+        .cookie-banner__btn {
+            flex: 1;
+            text-align: center;
+        }
+    }
+</style>
+
+<script>
+(function() {
+    var COOKIE_NAME = 'cookie_consent_accepted';
+    var HIDE_DAYS = {{ cookie_consent_hide_days }};
+
+    function getCookie(name) {
+        var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+        return match ? match[2] : null;
+    }
+
+    function setCookie(name, value, days) {
+        var d = new Date();
+        d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+        document.cookie = name + '=' + value + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+    }
+
+    // Показываем баннер только если cookie не установлена
+    if (!getCookie(COOKIE_NAME)) {
+        document.getElementById('cookie-consent-banner').style.display = 'block';
+    }
+
+    document.getElementById('cookie-consent-accept').addEventListener('click', function() {
+        setCookie(COOKIE_NAME, '1', HIDE_DAYS);
+        var banner = document.getElementById('cookie-consent-banner');
+        banner.style.animation = 'none';
+        banner.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+        banner.style.transform = 'translateY(100%)';
+        banner.style.opacity = '0';
+        setTimeout(function() { banner.style.display = 'none'; }, 300);
+    });
+})();
+</script>
