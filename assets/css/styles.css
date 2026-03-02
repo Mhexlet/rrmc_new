@@ -160,6 +160,117 @@
   .page-content span, .news-news-content span, .article-text span {
     font-size: 1.2rem !important;
   }
+
+  /* === Стили CKEditor 5: изображения === */
+
+  /* Базовый стиль для figure-обёрток CKEditor */
+  .page-content figure.image,
+  .news-news-content figure.image,
+  .article-text figure.image {
+    margin: 10px 0;
+    padding: 0;
+    display: table;
+  }
+
+  .page-content figure.image img,
+  .news-news-content figure.image img,
+  .article-text figure.image img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.95rem;
+  }
+
+  .page-content figure.image figcaption,
+  .news-news-content figure.image figcaption,
+  .article-text figure.image figcaption {
+    display: table-caption;
+    caption-side: bottom;
+    font-size: 0.9rem;
+    color: #968E7E;
+    text-align: center;
+    padding: 5px 0;
+  }
+
+  /* Изображение по центру (блочное) */
+  .page-content figure.image.image-style-block-align-center,
+  .news-news-content figure.image.image-style-block-align-center,
+  .article-text figure.image.image-style-block-align-center,
+  .page-content figure.image.image-style-align-center,
+  .news-news-content figure.image.image-style-align-center,
+  .article-text figure.image.image-style-align-center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Изображение слева с обтеканием */
+  .page-content figure.image.image-style-side,
+  .news-news-content figure.image.image-style-side,
+  .article-text figure.image.image-style-side,
+  .page-content figure.image.image-style-align-left,
+  .news-news-content figure.image.image-style-align-left,
+  .article-text figure.image.image-style-align-left,
+  .page-content figure.image.image-style-block-align-left,
+  .news-news-content figure.image.image-style-block-align-left,
+  .article-text figure.image.image-style-block-align-left {
+    float: left;
+    margin-right: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Изображение справа с обтеканием */
+  .page-content figure.image.image-style-align-right,
+  .news-news-content figure.image.image-style-align-right,
+  .article-text figure.image.image-style-align-right,
+  .page-content figure.image.image-style-block-align-right,
+  .news-news-content figure.image.image-style-block-align-right,
+  .article-text figure.image.image-style-block-align-right {
+    float: right;
+    margin-left: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Ресайз изображений — CKEditor ставит inline style width на figure */
+  .page-content figure.image[style*="width"],
+  .news-news-content figure.image[style*="width"],
+  .article-text figure.image[style*="width"] {
+    max-width: 100%;
+  }
+
+  .page-content figure.image[style*="width"] img,
+  .news-news-content figure.image[style*="width"] img,
+  .article-text figure.image[style*="width"] img {
+    width: 100%;
+  }
+
+  /* Сброс float после контента с обтекаемыми изображениями */
+  .page-content::after,
+  .news-news-content::after,
+  .article-text::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+
+  /* === Стили CKEditor 5: выравнивание текста === */
+
+  .page-content .text-align-center,
+  .news-news-content .text-align-center,
+  .article-text .text-align-center {
+    text-align: center;
+  }
+
+  .page-content .text-align-right,
+  .news-news-content .text-align-right,
+  .article-text .text-align-right {
+    text-align: right;
+  }
+
+  .page-content .text-align-justify,
+  .news-news-content .text-align-justify,
+  .article-text .text-align-justify {
+    text-align: justify;
+  }
   
   .gsc-control-cse {
     background-color: #FFFFFF !important;
