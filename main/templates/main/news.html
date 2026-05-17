@@ -126,7 +126,7 @@
         <div class="news-news-color-block" style="background-color: {{ n.1 }};"></div>
         <div class="news-news-left">
             <a href="{% url 'single_news' pk=n.0.pk %}" class="text-to-adjust index-link" id="news-{{ n.0.pk }}">{{ n.0.title }}</a>
-            <span class="text-to-adjust index-news-text" id="news-text-{{ n.0.pk }}">{{ n.0.content|truncatechars_html:200|safe }}</span>
+            <span class="text-to-adjust index-news-text" id="news-text-{{ n.0.pk }}">{{ n.0.content|striptags|truncatechars:400 }}</span>
 
 
 
