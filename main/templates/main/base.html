@@ -13,16 +13,39 @@
         <link type="image/x-icon" href="/static/img/logo.png" rel="shortcut icon" id="head_icon">
         <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
         <script src="{% static 'js/base.js' %}"></script>
-        <script async src="https://cse.google.com/cse.js?cx=92e3da7a8ab554250"></script>
         <script>
             (function() {
                 var _push = history.pushState;
+                var _replace = history.replaceState;
                 history.pushState = function(state, title, url) {
                     if (url && String(url).indexOf('gsc.tab') !== -1) return;
                     return _push.apply(this, arguments);
                 };
+                history.replaceState = function(state, title, url) {
+                    if (url && String(url).indexOf('gsc.tab') !== -1) return;
+                    return _replace.apply(this, arguments);
+                };
+                try {
+                    var d = Object.getOwnPropertyDescriptor(Location.prototype, 'hash');
+                    if (d && d.set) {
+                        Object.defineProperty(Location.prototype, 'hash', {
+                            configurable: true,
+                            get: d.get,
+                            set: function(v) { if (String(v).indexOf('gsc.tab') !== -1) return; return d.set.call(this, v); }
+                        });
+                    }
+                } catch(e) {}
+                window.addEventListener('hashchange', function() {
+                    if (location.hash.indexOf('gsc.tab') !== -1) {
+                        _replace.call(history, null, document.title, location.pathname + location.search);
+                    }
+                });
+                if (location.hash.indexOf('gsc.tab') !== -1) {
+                    _replace.call(history, null, document.title, location.pathname + location.search);
+                }
             })();
         </script>
+        <script async src="https://cse.google.com/cse.js?cx=92e3da7a8ab554250"></script>
         <script src="//code.jivo.ru/widget/8taz5Xz87p" async></script>
         {% block js %}
         {% endblock %}
