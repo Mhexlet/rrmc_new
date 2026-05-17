@@ -34,18 +34,55 @@
 
 ### Проблема 2: #gsc.tab=0
 
-В `main/templates/main/base.html` добавлен скрипт после подключения GSC:
+Перепробовано три итерации, рабочая — третья:
+
+**Итерация 1 (не сработала):** `hashchange`-листенер + `history.replaceState`.
+Причина: Google CSE добавляет хэш не через `location.hash =`, а через `history`-API,
+которое **не триггерит** событие `hashchange`.
+
+**Итерация 2 (не сработала):** Перехват `history.pushState` с отбросом
+вызовов, содержащих `gsc.tab`. Причина: CSE использует другой метод
+(скорее всего `replaceState` или прямой `Location.hash` сеттер).
+
+**Итерация 3 (рабочая):** Защита по всем фронтам, инлайн-скрипт поднят
+**выше** `cse.js` в `<head>`, чтобы патчи применились до загрузки CSE:
 
 ```javascript
-window.addEventListener('hashchange', function() {
-    if (window.location.hash === '#gsc.tab=0') {
-        history.replaceState(null, document.title, window.location.pathname + window.location.search);
-    }
-});
-if (window.location.hash === '#gsc.tab=0') {
-    history.replaceState(null, document.title, window.location.pathname + window.location.search);
-}
+(function() {
+    var _push = history.pushState;
+    var _replace = history.replaceState;
+    history.pushState = function(state, title, url) {
+        if (url && String(url).indexOf('gsc.tab') !== -1) return;
+        return _push.apply(this, arguments);
+    };
+    history.replaceState = function(state, title, url) {
+        if (url && String(url).indexOf('gsc.tab') !== -1) return;
+        return _replace.apply(this, arguments);
+    };
+    try {
+        var d = Object.getOwnPropertyDescriptor(Location.prototype, 'hash');
+        if (d && d.set) {
+            Object.defineProperty(Location.prototype, 'hash', {
+                configurable: true,
+                get: d.get,
+                set: function(v) { if (String(v).indexOf('gsc.tab') !== -1) return; return d.set.call(this, v); }
+            });
+        }
+    } catch(e) {}
+    window.addEventListener('hashchange', function() {
+        if (location.hash.indexOf('gsc.tab') !== -1) {
+            _replace.call(history, null, document.title, location.pathname + location.search);
+        }
+    });
+})();
 ```
+
+Что делает:
+- Патчит `history.pushState` и `history.replaceState` — отбрасывает вызовы с `gsc.tab` в URL
+- Переопределяет сеттер `Location.prototype.hash` — игнорирует присваивания с `gsc.tab`
+- Страхует `hashchange`-листенером — если что-то прорвётся, чистит через сохранённый оригинал `replaceState`
+
+Проверено в Playwright: на главной и на `/single_news/310/` хэш не появляется ни сразу после загрузки, ни через 3 секунды.
 
 ## Затронутые файлы
 
