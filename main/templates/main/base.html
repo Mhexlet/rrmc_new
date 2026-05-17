@@ -15,14 +15,13 @@
         <script src="{% static 'js/base.js' %}"></script>
         <script async src="https://cse.google.com/cse.js?cx=92e3da7a8ab554250"></script>
         <script>
-            window.addEventListener('hashchange', function() {
-                if (window.location.hash === '#gsc.tab=0') {
-                    history.replaceState(null, document.title, window.location.pathname + window.location.search);
-                }
-            });
-            if (window.location.hash === '#gsc.tab=0') {
-                history.replaceState(null, document.title, window.location.pathname + window.location.search);
-            }
+            (function() {
+                var _push = history.pushState;
+                history.pushState = function(state, title, url) {
+                    if (url && String(url).indexOf('gsc.tab') !== -1) return;
+                    return _push.apply(this, arguments);
+                };
+            })();
         </script>
         <script src="//code.jivo.ru/widget/8taz5Xz87p" async></script>
         {% block js %}
