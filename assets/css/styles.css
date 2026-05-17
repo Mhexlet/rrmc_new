@@ -149,8 +149,17 @@
     border-radius: 0.95rem;
     margin: 10px auto;
   }
-  
-  .page-content p:has(> img), .news-news-content p:has(> img), .article-text p:has(> img) {
+
+  .page-content img[width="16"], .news-news-content img[width="16"], .article-text img[width="16"],
+  .page-content img[height="16"], .news-news-content img[height="16"], .article-text img[height="16"] {
+    display: inline;
+    vertical-align: middle;
+    margin: 0 2px;
+    border-radius: 0;
+    max-width: none;
+  }
+
+  .page-content p:has(> img:not([width="16"])), .news-news-content p:has(> img:not([width="16"])), .article-text p:has(> img:not([width="16"])) {
     display: flex;
     flex-direction: column;
   }
@@ -283,6 +292,35 @@
   .news-news-content p:last-child,
   .article-text p:last-child {
     margin-bottom: 0;
+  }
+
+  /* === Стили CKEditor 5: inline-картинки без обёртки figure === */
+
+  .page-content img.image-style-align-left,
+  .news-news-content img.image-style-align-left,
+  .article-text img.image-style-align-left,
+  .page-content img.image-style-side,
+  .news-news-content img.image-style-side,
+  .article-text img.image-style-side {
+    float: left;
+    margin-right: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-content img.image-style-align-right,
+  .news-news-content img.image-style-align-right,
+  .article-text img.image-style-align-right {
+    float: right;
+    margin-left: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-content img.image-style-align-center,
+  .news-news-content img.image-style-align-center,
+  .article-text img.image-style-align-center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
   }
   
   .gsc-control-cse {
