@@ -212,3 +212,61 @@ def delete_file(sender, instance, using, origin, **kwargs):
         os.remove(os.path.join(BASE_DIR, 'media', instance.file.name))
     except (FileNotFoundError, UnicodeEncodeError):
         pass
+
+
+class CollectiveMember(models.Model):
+
+    full_name = models.CharField(max_length=128, verbose_name='ФИО')
+    profession = models.CharField(max_length=128, verbose_name='Специальность')
+    photo = models.ImageField(upload_to='tmp/', blank=True, null=True, verbose_name='Фото')
+    order = models.PositiveSmallIntegerField(default=0, verbose_name='Порядок')
+
+    class Meta:
+        verbose_name = 'Сотрудник коллектива'
+        verbose_name_plural = 'Коллектив'
+        ordering = ['order', 'full_name']
+
+    def __str__(self):
+        return self.full_name
+
+
+@receiver(models.signals.pre_save, sender=CollectiveMember)
+def compress_collective_photo(sender, instance, **kwargs):
+    if not instance.photo:
+        return
+    if instance.pk:
+        old_photo = CollectiveMember.objects.filter(pk=instance.pk).values_list('photo', flat=True).first()
+        if old_photo == instance.photo.name:
+            return
+    img = Image.open(instance.photo)
+    img = ImageOps.exif_transpose(img)
+    current_gmt = time.gmtime()
+    time_stamp = calendar.timegm(current_gmt)
+    file_name = f'{time_stamp}-{uuid4().hex}.jpg'
+    new_file_path = os.path.join(BASE_DIR, 'media', 'collective', file_name)
+    os.makedirs(os.path.dirname(new_file_path), exist_ok=True)
+    width = img.size[0]
+    height = img.size[1]
+    ratio = width / height
+    if ratio > 1 and width > 1024:
+        img = img.resize([1024, int(1024 / ratio)])
+    elif height > 1024:
+        img = img.resize([int(1024 * ratio), 1024])
+    try:
+        img.save(new_file_path, quality=90, optimize=True)
+    except OSError:
+        img = img.convert('RGB')
+        img.save(new_file_path, quality=90, optimize=True)
+    instance.photo = f'collective/{file_name}'
+
+
+@receiver(models.signals.pre_delete, sender=CollectiveMember)
+def delete_collective_photo(sender, instance, **kwargs):
+    # Удаляем только файлы, которыми управляет эта модель. Фото, перенесённые со
+    # старой страницы, лежат в attachments/ и их ещё показывает прежняя CMS-страница.
+    if not instance.photo or not instance.photo.name.startswith('collective/'):
+        return
+    try:
+        os.remove(os.path.join(BASE_DIR, 'media', instance.photo.name))
+    except (FileNotFoundError, UnicodeEncodeError):
+        pass

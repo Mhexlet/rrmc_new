@@ -2517,6 +2517,33 @@ input[type=checkbox] {
     }
 }
 
+/* ==========================================================================
+   Коллектив (/custom/collective/)
+   Сетка и размеры карточек берутся от .specialists-*, здесь только текст.
+   ========================================================================== */
+
+.collective-name {
+    margin-bottom: 5px;
+    color: $h1-color;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.collective-profession {
+    margin-bottom: 5px;
+    color: $text-color;
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+@media (max-width: 800px) {
+    .collective-name, .collective-profession {
+        text-align: center;
+        width: 100%;
+        font-size: 1.2rem;
+    }
+}
+
 .filter-container {
     display: flex;
     flex-direction: column;

@@ -4,7 +4,7 @@ import calendar
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 from django.shortcuts import render
-from custom.models import Section, Page, AlbumBlock, FileSetBlock, AlbumImage, FileSetFile
+from custom.models import Section, Page, AlbumBlock, FileSetBlock, AlbumImage, FileSetFile, CollectiveMember
 from main.models import SiteContent
 
 
@@ -26,6 +26,24 @@ def constructor(request, url):
                                          str.maketrans({' ': '', '-': '', '(': '', ')': ''}))]
     }
     return render(request, 'custom/page.html', context)
+
+
+def collective(request):
+
+    context = {
+        'title': 'Коллектив',
+        'members': CollectiveMember.objects.all(),
+        # Прежняя CMS-страница нужна, чтобы раздел меню подсветился как активный
+        'current_page': Page.objects.filter(url='collective').first(),
+        'menu_sections': Section.objects.all().order_by('order'),
+        'account_section_id': int(SiteContent.objects.get(name='account_section_id').content),
+        'menu_pages': Page.objects.filter(section=None),
+        'header_content': [SiteContent.objects.get(name='email').content,
+                                     SiteContent.objects.get(name='phone').content,
+                                     SiteContent.objects.get(name='phone').content.translate(
+                                         str.maketrans({' ': '', '-': '', '(': '', ')': ''}))]
+    }
+    return render(request, 'custom/collective.html', context)
 
 
 @user_passes_test(lambda u: u.is_superuser)

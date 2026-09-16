@@ -1,0 +1,26 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+    <h3 class="page-title">{{ title }}</h3>
+    <div class="separator"></div>
+    {# Классы specialists-* переиспользуются намеренно: карточки должны быть того же размера, что на /specialists/specialists/ #}
+    <div class="specialists-content">
+        {% for member in members %}
+            <div class="specialists-block">
+                <div class="specialists-img-block">
+                    {% if member.photo %}
+                        <img src="/media/{{ member.photo }}" alt="{{ member.full_name }}" class="specialists-img">
+                    {% endif %}
+                </div>
+                <div class="collective-name">{{ member.full_name }}</div>
+                <div class="collective-profession">{{ member.profession }}</div>
+            </div>
+        {% endfor %}
+    </div>
+    {% if not members %}
+        <div class="faq-form-notification">На данный момент тут ничего нет</div>
+    {% endif %}
+    <div class="faq-background">
+        <img class="page-background-img">
+    </div>
+{% endblock %}

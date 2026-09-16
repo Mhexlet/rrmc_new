@@ -5,7 +5,7 @@ import calendar
 
 from django.contrib import admin
 from django.db import models
-from .models import Section, Page, AlbumBlock, FileSetBlock, AlbumImage, FileSetFile
+from .models import Section, Page, AlbumBlock, FileSetBlock, AlbumImage, FileSetFile, CollectiveMember
 from django.db.models.fields.reverse_related import ManyToOneRel
 from django_ckeditor_5.widgets import CKEditor5Widget
 from MedProject.settings import BASE_DIR
@@ -102,3 +102,22 @@ class PageAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         return super().save_model(request, obj, form, change)
 
+
+@admin.register(CollectiveMember)
+class CollectiveMemberAdmin(admin.ModelAdmin):
+    list_display = ['pk', 'full_name', 'profession', 'order']
+    list_editable = ['order']
+    search_fields = ['full_name', 'profession']
+    ordering = ['order', 'full_name']
+
+    def save_model(self, request, obj, form, change):
+        # Старое фото удаляем только если им управляет модель: перенесённые со
+        # старой страницы файлы лежат в attachments/ и нужны прежней CMS-странице.
+        if change and 'photo' in form.changed_data:
+            old_photo = form.initial.get('photo')
+            if old_photo and str(old_photo).startswith('collective/'):
+                try:
+                    os.remove(os.path.join(BASE_DIR, 'media', str(old_photo)))
+                except (FileNotFoundError, UnicodeEncodeError):
+                    pass
+        return super().save_model(request, obj, form, change)

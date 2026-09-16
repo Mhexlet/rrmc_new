@@ -8,5 +8,7 @@ urlpatterns = [
     path('add_album/', custom.add_album, name='add_album'),
     path('add_fileset_page/', custom.add_fileset_page, name='add_fileset_page'),
     path('add_fileset/', custom.add_fileset, name='add_fileset'),
+    # Ставится до конструктора: этот адрес раньше отдавала CMS-страница
+    path('collective/', custom.collective, name='collective'),
     path('<str:url>/', custom.constructor, name='constructor'),
 ]
