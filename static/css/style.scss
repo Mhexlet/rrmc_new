@@ -83,6 +83,572 @@ input:focus {
     outline: none;
 }
 
+/* ==========================================================================
+   Анкета (/anketa/)
+   Раньше эти правила жили только в собранном style.css и потерялись при
+   пересборке из style.scss. Держим их здесь, в исходнике.
+   ========================================================================== */
+
+.anketa-background {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f0f9ff; /* Нежный светлый фон */
+    overflow: hidden;
+}
+
+.anketa-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.anketa-background::before,
+.anketa-background::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.15;
+}
+
+.anketa-background::before {
+    width: 300px;
+    height: 300px;
+    background-color: #ffccd5;
+    top: -50px;
+    left: -50px;
+}
+
+.anketa-background::after {
+    width: 400px;
+    height: 400px;
+    background-color: #cce5ff;
+    bottom: -100px;
+    right: -100px;
+}
+
+.anketa-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.anketa-input {
+    width: 100%;
+    color: #716D66;
+    background-color: #FFFFFF;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    padding: 0.675rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.3;
+    border: 2px solid rgba(113, 109, 102, 0.2); /* Полупрозрачная граница */
+    margin-bottom: 25px;
+}
+
+/* Изменяем цвет границы при фокусе */
+.anketa-input:focus {
+    border-color: #4FC9DA;
+}
+
+/* Изменяем цвет границы, если поле заполнено */
+.anketa-input.filled {
+    border-color: #4FC9DA;
+}
+
+.anketa-input::-moz-placeholder {
+    opacity: 0.5;
+}
+
+.anketa-input::placeholder {
+    opacity: 0.5;
+}
+
+.anketa-input:focus {
+    outline: none;
+}
+
+.anketa-h2 {
+    color: #211F1C;
+    font-size: 1.3rem;
+    margin-bottom: 35px;
+    margin-top: 35px;
+    text-align: left;
+    position: relative; /* Для позиционирования псевдоэлемента */
+    /* Подчёркивание всей ширины контейнера */
+}
+.anketa-h2::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -15px; /* Отступ от текста */
+    width: 100%;
+    height: 2px;
+    background-color: #4FC9DA;
+    opacity: 0.8; /* Лёгкая прозрачность для ненавязчивости */
+}
+
+.anketa-reasons,
+.anketa-sources,
+.anketa-consent {
+    margin: 15px 0;
+}
+
+.anketa-reasons label,
+.anketa-sources label,
+.anketa-consent label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.anketa-document {
+    margin-bottom: 15px;
+}
+
+input[type=radio],
+input[type=checkbox] {
+    margin-right: 10px;
+}
+
+.anketa-submit-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 0.95rem;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.anketa-relation-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.anketa-relation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.anketa-relation label {
+    flex: 1 1 auto;
+}
+
+.anketa-relation-other {
+    margin-top: 15px;
+}
+
+.anketa-relation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.anketa-radio {
+    flex: 1 1 45%;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #fff;
+    color: #211F1C;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, font-size 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+/* Скрываем стандартную радиокнопку */
+.anketa-radio input[type=radio] {
+    -webkit-appearance: none;
+          -moz-appearance: none;
+                    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #4FC9DA;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Кастомная радиокнопка */
+/* Кастомная радиокнопка (заливка цветом при выборе) */
+.anketa-radio input[type=radio]::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #4FC9DA;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+/* Изменяем стиль текста, когда радиокнопка выбрана */
+.anketa-radio input[type=radio]:checked::before {
+    opacity: 1;
+}
+
+/* Изменение цвета текста при выборе радиокнопки */
+.anketa-radio input[type=radio]:checked + span {
+    color: #4FC9DA;
+    font-size: 1.05rem; /* Увеличение текста */
+    font-weight: 600;
+    transition: color 0.3s, font-size 0.3s;
+}
+
+.anketa-time-container {
+    margin-bottom: 25px;
+}
+
+.anketa-time {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.anketa-contact-container {
+    margin-bottom: 25px;
+}
+
+.anketa-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.anketa-checkbox {
+    flex: 1 1 45%;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #fff;
+    color: #211F1C;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, font-size 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    border: 2px solid rgba(113, 109, 102, 0.1); /* Полупрозрачная граница */
+}
+
+/* Стиль для текста внутри чекбокса */
+.anketa-checkbox span {
+    line-height: 1; /* Убираем дополнительное пространство */
+    vertical-align: middle;
+}
+
+/* Скрываем стандартный чекбокс */
+.anketa-checkbox input[type=checkbox] {
+    -webkit-appearance: none;
+          -moz-appearance: none;
+                    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #4FC9DA;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    vertical-align: middle; /* Выровнять по центру относительно текста */
+}
+
+/* Кастомный чекбокс (галочка при выборе) */
+.anketa-checkbox input[type=checkbox]::before {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background-color: #4FC9DA;
+    border-radius: 3px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+/* Полная заливка чекбокса при выборе */
+.anketa-checkbox input[type=checkbox]:checked::before {
+    opacity: 1;
+}
+
+/* Изменение цвета текста при выборе чекбокса */
+.anketa-checkbox input[type=checkbox]:checked + span {
+    color: #4FC9DA;
+    font-size: 1.05rem;
+    font-weight: 600;
+    transition: color 0.3s, font-size 0.3s;
+}
+
+.anketa-child-header {
+    display: flex;
+    align-items: baseline; /* Выровнять по линии текста заголовка */
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.copy-last-name-btn {
+    padding: 8px 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #4FC9DA;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.copy-last-name-btn:hover {
+    background-color: #2bb8cb;
+    transform: translateY(-2px);
+}
+
+.copy-last-name-btn:active {
+    transform: translateY(0);
+}
+
+.anketa-sources-container {
+    margin-bottom: 25px;
+}
+
+/* Поле "Иное" */
+.anketa-source-other {
+    margin-top: 10px;
+}
+
+.anketa-file-container {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.file-info {
+    font-size: 0.8rem;
+    color: #716D66;
+    margin-top: 5px;
+}
+
+.progress-container {
+    width: 100%;
+    height: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    width: 0;
+    height: 100%;
+    background-color: #4FC9DA;
+    transition: width 0.3s;
+}
+
+.upload-status {
+    font-size: 0.9rem;
+    color: #4FC9DA;
+    margin-top: 10px;
+}
+
+.anketa-consent-container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Скрываем стандартный чекбокс */
+.anketa-consent-checkbox {
+    -webkit-appearance: none;
+          -moz-appearance: none;
+                    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 1px solid #4FC9DA;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Кастомный чекбокс (галочка при выборе) */
+.anketa-consent-checkbox::before {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background-color: #4FC9DA;
+    border-radius: 3px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+/* Полная заливка чекбокса при выборе */
+.anketa-consent-checkbox:checked::before {
+    opacity: 1;
+}
+
+/* Ссылка на политику конфиденциальности */
+.privacy-link {
+    font-size: 0.85rem;
+    color: #4FC9DA;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.privacy-link:hover {
+    color: #2bb8cb;
+}
+
+.anketa-submit-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #4FC9DA;
+    border: none;
+    border-radius: 8px;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transition: background-color 0.3s, opacity 0.3s;
+}
+
+.anketa-submit-button.active {
+    cursor: pointer;
+    opacity: 1;
+}
+
+.validation-errors {
+    color: #4FC9DA;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+
+.popup-message {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #444;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 10000;
+}
+
+.popup-message.show {
+    opacity: 1;
+}
+
+.welcome-message {
+    padding: 20px;
+    background-color: #f0f8ff;
+    border: 2px solid #4FC9DA;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 20px;
+    color: #211F1C;
+}
+.welcome-message h2 {
+    font-size: 1.5rem;
+    color: #4FC9DA;
+    margin-bottom: 10px;
+}
+.welcome-message p {
+    font-size: 1rem;
+    margin: 5px 0;
+}
+.welcome-message .review-time {
+    font-weight: bold;
+    color: #4FC9DA;
+}
+
+/* Основной стиль кнопки */
+.btn-clear {
+    display: inline-block;
+    padding: 5px 15px; /* Уменьшенный размер */
+    font-size: 0.85rem; /* Уменьшенный шрифт */
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: none; /* Убираем тени */
+}
+
+/* Стили кнопки "Очистить анкету" */
+.clear-form-btn {
+    background-color: #cccccc; /* Нейтральный серый цвет */
+    color: #333;
+    border: 1px solid #bbb;
+    margin-top: 10px;
+}
+.clear-form-btn:hover {
+    background-color: #b3b3b3;
+    border-color: #999;
+}
+.clear-form-btn:active {
+    transform: translateY(1px);
+    background-color: #999;
+    border-color: #888;
+}
+.clear-form-btn:focus {
+    outline: none;
+    border: 1px solid #888;
+}
+
+/* Стили для сообщения благодарности */
+.thank-you-message {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #e6f7ff;
+    border: 2px solid #4FC9DA;
+    border-radius: 12px;
+    text-align: center;
+    color: #211F1C;
+    font-size: 1.1rem;
+    margin-top: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+/* Анимация появления */
+.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Стили для ссылки */
+.thank-you-message a {
+    color: #4FC9DA;
+    text-decoration: underline;
+    font-weight: 600;
+}
+.thank-you-message a:hover {
+    color: #2bb8cb;
+}
+
 .paginator-menu {
     font-size: 1.075rem;
     font-weight: 500;
