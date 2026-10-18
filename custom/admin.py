@@ -8,6 +8,7 @@ from django.db import models
 from .models import Section, Page, AlbumBlock, FileSetBlock, AlbumImage, FileSetFile, CollectiveMember
 from django.db.models.fields.reverse_related import ManyToOneRel
 from django_ckeditor_5.widgets import CKEditor5Widget
+from main.editor_content import EditorContentAdminMixin
 from MedProject.settings import BASE_DIR
 import os
 
@@ -85,7 +86,8 @@ class FileSetFileAdmin(admin.ModelAdmin):
 
 
 @admin.register(Page)
-class PageAdmin(admin.ModelAdmin):
+class PageAdmin(EditorContentAdminMixin, admin.ModelAdmin):
+    editor_fields = ('content',)
     list_display = ['pk', 'title', 'url', 'section', 'short_content', 'approved']
     list_filter = ('title', 'url', 'section')
     search_fields = ['title', 'url', 'section']

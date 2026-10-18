@@ -6,11 +6,13 @@ from django.utils.html import format_html
 
 from .models import Article, ArticleFile, ArticleApprovalApplication
 from django_ckeditor_5.widgets import CKEditor5Widget
+from main.editor_content import EditorContentAdminMixin
 from MedProject.settings import BASE_URL
 
 
 @admin.register(Article)
-class ArticleAdmin(admin.ModelAdmin):
+class ArticleAdmin(EditorContentAdminMixin, admin.ModelAdmin):
+    editor_fields = ('text',)
     list_display = ['author', 'hidden', 'theme', 'title', 'short_text', 'created_at', 'approved_at', 'approved']
     readonly_fields = ['files']
     formfield_overrides = {

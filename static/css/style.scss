@@ -1,3 +1,5 @@
+@use 'content-blocks' as *;
+
 $h1-color: #211F1C;
 $text-color: #8E887A;
 $h2-color: #B5B0A1;
@@ -832,6 +834,14 @@ input[type=checkbox] {
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+// === Кнопки и плашки из редактора (static/css/_content-blocks.scss) ===
+
+.page-content,
+.news-news-content,
+.article-text {
+    @include rr-content-blocks;
 }
 
 .gsc-control-cse {

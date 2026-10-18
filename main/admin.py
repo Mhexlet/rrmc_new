@@ -10,6 +10,7 @@ from authentication.models import compress_img
 from .models import QuestionAnswer, Review, MainSliderImage, Application, Place, News, SiteContent, Banner, IndexLink, \
     Institution
 from django_ckeditor_5.widgets import CKEditor5Widget
+from .editor_content import EditorContentAdminMixin
 
 
 
@@ -149,7 +150,8 @@ class InstitutionAdmin(admin.ModelAdmin):
 
 
 @admin.register(News)
-class NewsAdmin(admin.ModelAdmin):
+class NewsAdmin(EditorContentAdminMixin, admin.ModelAdmin):
+    editor_fields = ('content',)
     list_display = ['id', 'title', 'image', 'date']
     list_display_links = ('id', 'title',)
     formfield_overrides = {

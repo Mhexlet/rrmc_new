@@ -1,0 +1,128 @@
+// Кнопки и плашки, которые вставляются через редактор в админке.
+//
+// Подключается дважды: в style.scss (сайт, внутри .page-content и т.п.) и в
+// editor-content.scss (окно CKEditor в админке, внутри .ck-content), чтобы в
+// редакторе кнопка выглядела так же, как на сайте.
+//
+// Список цветов и размеров для меню редактора — в MedProject/ckeditor_config.py.
+// Новый цвет кнопки добавляется в оба места: сюда в $rr-btn-colors и туда в BUTTON_COLORS.
+
+$rr-btn-default: #4FC9DA; // фирменный бирюзовый, как $highlight-color
+
+$rr-btn-colors: (
+    "blue": #1E6FD9,
+    "navy": #233A8C,
+    "green": #2E9E5B,
+    "orange": #E8780C,
+    "red": #D93636,
+    "pink": #D63384,
+    "purple": #7B4BC4,
+    "dark": #333333,
+);
+
+@mixin rr-content-blocks {
+
+    // === Кнопки ===
+
+    // rr-btn ставит переключатель «Кнопка» в окне ссылки, модификаторы rr-btn--*
+    // ставит список «Стиль». Кнопкой считается ссылка с любым из этих классов.
+    a.rr-btn,
+    a[class*="rr-btn--"] {
+        --rr-btn-color: #{$rr-btn-default};
+        display: inline-block;
+        box-sizing: border-box;
+        max-width: 100%;
+        margin: 0.25em 0;
+        padding: 0.7em 1.5em;
+        border: 2px solid var(--rr-btn-color);
+        border-radius: 0.5em;
+        background: var(--rr-btn-color);
+        color: #fff;
+        font-weight: 600;
+        line-height: 1.25;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: filter 0.15s, background-color 0.15s, color 0.15s;
+
+        &:hover,
+        &:focus-visible {
+            filter: brightness(0.9);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        // Размер текста задаёт сама кнопка, а не span-ы, которые редактор
+        // ставит внутрь при смене цвета или шрифта
+        span {
+            font-size: inherit !important;
+        }
+    }
+
+    @each $name, $color in $rr-btn-colors {
+        a.rr-btn--#{$name} {
+            --rr-btn-color: #{$color};
+        }
+    }
+
+    a.rr-btn--sm {
+        padding: 0.45em 1em;
+        font-size: 0.85em;
+    }
+
+    a.rr-btn--lg {
+        padding: 0.85em 2em;
+        font-size: 1.25em;
+    }
+
+    a.rr-btn--wide {
+        display: block;
+        width: 100%;
+    }
+
+    a.rr-btn--outline {
+        background: transparent;
+        color: var(--rr-btn-color);
+
+        &:hover,
+        &:focus-visible {
+            filter: none;
+            background: var(--rr-btn-color);
+            color: #fff;
+        }
+    }
+
+    // === Плашки ===
+
+    p.rr-note {
+        --rr-note-color: #{$rr-btn-default};
+        --rr-note-bg: #EAF8FA;
+        padding: 0.9em 1.2em;
+        border-left: 4px solid var(--rr-note-color);
+        border-radius: 0.5em;
+        background: var(--rr-note-bg);
+        color: #333;
+    }
+
+    p.rr-note--warning {
+        --rr-note-color: #E8780C;
+        --rr-note-bg: #FFF4E5;
+    }
+
+    p.rr-note--success {
+        --rr-note-color: #2E9E5B;
+        --rr-note-bg: #EAF6EF;
+    }
+
+    // На сайте у абзацев и span-ов размер прибит через !important, поэтому
+    // крупному тексту тоже нужен !important и более точный селектор
+    p.rr-lead {
+        font-size: 1.65rem !important;
+        line-height: 1.45;
+        color: #211F1C;
+
+        span {
+            font-size: inherit !important;
+        }
+    }
+}

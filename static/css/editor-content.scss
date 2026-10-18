@@ -1,0 +1,16 @@
+// Стили содержимого для окна CKEditor 5 в админке.
+// Подключается через CKEDITOR_5_CUSTOM_CSS (MedProject/ckeditor_config.py).
+// Сборка: sass --style=compressed --no-source-map static/css/editor-content.scss static/css/editor-content.css
+
+@use 'content-blocks' as *;
+
+.ck-content {
+    @include rr-content-blocks;
+}
+
+// «Стили» во всплывающей панели ссылки (ckeditor_config.py, link.toolbar):
+// там нужны только кнопки, поэтому прячем первую группу — стили абзацев
+// (плашки, крупный текст). На верхней панели редактора они остаются.
+.ck.ck-toolbar-container .ck-style-panel .ck-style-panel__style-group:first-child {
+    display: none;
+}
