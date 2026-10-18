@@ -30,6 +30,7 @@ from django.utils.timezone import make_aware
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
+from .uploads import check_referral_document
 
 
 
@@ -572,6 +573,10 @@ def anketa_view(request):
             errors.append('Улица/микрорайон обязательны.')
         if not house:
             errors.append('Дом обязателен.')
+        if referral_document:
+            document_error = check_referral_document(referral_document)
+            if document_error:
+                errors.append(document_error)
 
         # Проверка обязательных полей и других условий
         # Добавьте дополнительные проверки по необходимости
